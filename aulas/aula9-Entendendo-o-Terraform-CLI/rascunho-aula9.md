@@ -4,6 +4,7 @@
 
 terraform -h
 
+~~~bash
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$ terraform -h
 Usage: terraform [global options] <subcommand> [args]
 
@@ -44,7 +45,7 @@ Global options (use these before the subcommand, if any):
   -help         Show this help output, or the help for a specified subcommand.
   -version      An alias for the "version" subcommand.
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$
-
+~~~
 
 
 # Estrutura do comando
@@ -63,6 +64,7 @@ Usage: terraform [global options] <subcommand> [args]
 
 terraform init -h
 
+~~~bash
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$ terraform init -h
 Usage: terraform [global options] init [options]
 
@@ -143,3 +145,4 @@ Options:
                           See the documentation on configuring Terraform with
                           Terraform Cloud for more information.
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$
+~~~

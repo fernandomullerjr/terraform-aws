@@ -7,19 +7,24 @@
 
 tfenv use [versão-desejada]
 
+~~~bash
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$ tfenv use
 Switching default version to v1.1.5
 Switching completed
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$
-
+~~~
 
 
 
 # Verificando a versão do Terraform:
 
+- É possível verificar a versão do Terraform usando os comandos:
+
+~~~bash
 tfenv list
 terraform version
 cat /home/fernando/.tfenv/version
+~~~
 
 ~~~bash
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$ tfenv list
@@ -43,7 +48,3 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$
 
 
 
-
-~~~html
-Esta é uma linha de código em HTML.
-~~~
