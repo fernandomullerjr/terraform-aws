@@ -21,6 +21,7 @@ tfenv list
 terraform version
 cat /home/fernando/.tfenv/version
 
+~~~bash
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$ tfenv list
 * 1.1.5 (set by /home/fernando/.tfenv/version)
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$
@@ -36,3 +37,13 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$ cat /home/fernando/.tfenv/version
 1.1.5
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$
+~~~
+
+
+
+
+
+
+~~~html
+Esta é uma linha de código em HTML.
+~~~
