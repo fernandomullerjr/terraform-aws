@@ -2,6 +2,9 @@
 
 # Aula 9. Entendendo o Terraform CLI
 
+
+### Utilizando o Help
+
 terraform -h
 
 ~~~bash
@@ -48,14 +51,14 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$
 ~~~
 
 
-# Estrutura do comando
+### Estrutura do comando
 
 Usage: terraform [global options] <subcommand> [args]
 
 
 
 
-# Como usar um comando especifico
+### Como usar um comando especifico
 
 - O help do Terraform auxilia na utilização de comandos especificos.
 - Basta passar o paramêtro "-h" ao final do comando.
