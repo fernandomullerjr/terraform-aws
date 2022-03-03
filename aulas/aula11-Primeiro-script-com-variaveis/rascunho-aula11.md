@@ -6,9 +6,9 @@
 - Exemplo:
 
 ~~~bash
-aws_access_key_id=AKIA34JOWZ7JI3YJMTTK aws_secret_access_key=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 terraform plan
+aws_access_key_id=  aws_secret_access_key=  terraform plan
 ~~~
 
 ~~~bash
-aws_access_key_id=AKIA34JOWZ7JI3YJMTTK aws_secret_access_key=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 terraform apply
+aws_access_key_id=  aws_secret_access_key=  terraform apply
 ~~~
