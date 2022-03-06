@@ -679,3 +679,35 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula13-
 
 
 - Observação: a sintaxe do var-file e do -auto-approve é a mesma para os comandos plan, apply e destroy.
+
+
+
+# Material extra
+
+- Explicações sobre as diferenças entre variable-tf variable-tfvars no Terraform:
+    https://amazicworld.com/difference-between-variable-tf-and-variable-tfvars-in-terraform/
+
+
+Child modules and hierarchy of processing
+
+However the difference really starts be become apparent when you are dealing with child modules in your code as a *.tfvar file ONLY applies to root module variables; however, any defaults set in a variable will also apply to child modules.
+
+Consider this example…
+
+Sport
+├── Football
+│   ├── America
+│   │   └── terraform.tfvars
+│   └── terraform.tfvars
+
+If we have the variable myvar = “football” defined in sport/football/terraform.tfvars and myvar = “soccer” defined in sport/football/America/terraform.tfvars, normally you would expect that the value of the myvar variable to set to “soccer”. But this is not the case it is set to “football”, which incidentally is correct (both for the sport and for the variable), as child module .tfvar files are treated as optional and root tfvars required and authoritative. If you need to change the variable from “football” to “soccer” the you would add that variable to a .tf file in the folder that the module runs.
+
+According to the terraform documentation on input variables, Terraform loads variables in the following order, with later sources taking precedence over earlier ones:
+
+    Environment variables
+    The tfvarsfile, if present.
+    The tfvars.jsonfile, if present.
+    Any *.auto.tfvars or *.auto.tfvars.json files, processed in lexical order of their filenames.
+    Any -var and -var-file options on the command line, in order they are provided. (This includes variables set by a Terraform Cloud workspace.)
+
+Wait a minute there is no mention of .tf file declaration in there, this is because variables declared in .tf files are concatenated into a single entity consisting of your variables.tf your main.tf and your output.tf files before being processed by terraform. Hence this declaration have highest precedence in order of application.
