@@ -404,6 +404,9 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula15-
 
 The terraform console command provides an interactive console for evaluating expressions.
 
+- Usando o comando "terraform console" é possível executar comandos interativos na console e obter valores dos recursos.
+
+- Exemplos:
 
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula15-O-arquivo-de-estado-tfstate$ terraform console
 > 1 +5
@@ -476,3 +479,18 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula15-
 > aws_s3_bucket.super-bucket.region
 "us-east-1"
 >
+
+
+
+
+
+- Comando para listar os recursos que foram criados e estão no state:
+terraform state list
+~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula15-O-arquivo-de-estado-tfstate$ terraform state list
+aws_s3_bucket.super-bucket
+aws_s3_object.objeto-do-bucket
+aws_s3_object.random
+random_pet.bucket
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula15-O-arquivo-de-estado-tfstate$
+~~~
