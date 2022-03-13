@@ -4,7 +4,7 @@ resource "aws_s3_bucket" "super-bucket" {
   tags = local.common_tags
 }
 
-resource "aws_s3_bucket_object" "objeto-do-bucket" {
+resource "aws_s3_object" "objeto-do-bucket" {
     bucket = aws_s3_bucket.super-bucket.bucket
     key = "config/ips.json"
     source = "ips.json"
