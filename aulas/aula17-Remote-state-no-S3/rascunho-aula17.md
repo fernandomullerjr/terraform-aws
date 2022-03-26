@@ -599,3 +599,8 @@ aws_instance.web: Still destroying... [id=i-0ba7d4d956a243777, 30s elapsed]
 aws_instance.web: Destruction complete after 33s
 
 Destroy complete! Resources: 1 destroyed.
+
+
+
+
+git filter-branch -f --index-filter 'git rm --cached --ignore-unmatch terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/3.69.0/linux_amd64/terraform-provider-aws_v3.69.0_x5'
