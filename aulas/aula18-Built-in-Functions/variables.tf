@@ -9,7 +9,7 @@ variable "aws_region" {
 variable "instance_ami" {
   type        = string
   description = "AMI do Ubuntu 20 na AWS"
-  default     = "ami-04505e74c0741db8d"
+  default     = "ami-04505e74c0741db8d" # Ubuntu 20 - AWS
 
   validation {
     condition     = length(var.instance_ami) > 4 && substr(var.instance_ami, 0, 4) == "ami-"
