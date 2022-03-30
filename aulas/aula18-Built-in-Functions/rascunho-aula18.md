@@ -690,18 +690,6 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula18-
 
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula18-Built-in-Functions$ cat ~/.aws/credentials
 [default]
-aws_access_key_id = AKIA34JOWZ7JI3YJMTTK
-aws_secret_access_key = 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
-
-[fernando]
-aws_access_key_id = AKIA34JOWZ7JI3YJMTTK
-aws_secret_access_key = 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
-
-[fernandomuller]
-aws_access_key_id = AKIA34JOWZ7JEJTJSIOE
-aws_secret_access_key = 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
-fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula18-Built-in-Functions$
-
 
 export AWS_PROFILE=fernandomuller
 
