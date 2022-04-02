@@ -7,13 +7,6 @@ terraform {
       version = "3.23.0"
     }
   }
-
-  backend "s3" {
-    bucket  = "tfstate-816678621138"
-    key     = "dev/03-data-sources-s3/terraform.tfstate"
-    region  = "us-east-1"
-    profile = "fernandomuller"
-  }
 }
 
 provider "aws" {
