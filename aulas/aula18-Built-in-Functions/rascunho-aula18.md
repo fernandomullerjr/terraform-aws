@@ -1185,9 +1185,102 @@ Destroy complete! Resources: 4 destroyed.
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula18-Built-in-Functions$
 
 
-
-
-
-
 - Video continua em 11:41
 - Pendente, criar "outputs.tf".
+
+
+
+
+
+
+# Dia 02/04/2022
+
+- Criado o arquivo de Outputs:
+outputs.tf
+
+~~~hcl
+output "instance_public_ips" {
+  value = aws_instance.server.*.public_ip
+}
+
+output "instance_names" {
+  value = join(", ", aws_instance.server.*.tags.Name)
+}
+~~~
+
+
+terraform apply -var="env=prod" -auto-approve
+
+- É possível verificar que o Terraform aplicou a criação de 3 instancias, devido a variável de Prod.
+- A primeira começa com 0 e vai até 2.
+- Foi adicionado o sufixo "-prod" no nome do bucket, conforme a variável [env].
+- Ao final da saída constam os Outputs.
+
+~~~bash
+random_pet.bucket: Creating...
+random_pet.bucket: Creation complete after 0s [id=finally-carefully-barely-darling-kodiak]
+aws_s3_bucket.this: Creating...
+aws_instance.server[2]: Creating...
+aws_instance.server[0]: Creating...
+aws_instance.server[1]: Creating...
+aws_s3_bucket.this: Still creating... [10s elapsed]
+aws_instance.server[2]: Still creating... [10s elapsed]
+aws_instance.server[0]: Still creating... [10s elapsed]
+aws_instance.server[1]: Still creating... [10s elapsed]
+aws_s3_bucket.this: Creation complete after 11s [id=finally-carefully-barely-darling-kodiak-prod]
+aws_s3_bucket_object.this: Creating...
+aws_s3_bucket_object.this: Creation complete after 2s [id=de637a98-2f9d-d319-3118-cdf03188e7fa.zip]
+aws_instance.server[1]: Creation complete after 19s [id=i-01679a10553749e87]
+aws_instance.server[2]: Creation complete after 19s [id=i-000319caaac01b73a]
+aws_instance.server[0]: Creation complete after 19s [id=i-047a5b48d9ada567c]
+
+Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+instance_names = "Instance 1, Instance 2, Instance 3"
+instance_public_ips = [
+  "3.236.189.91",
+  "3.235.5.171",
+  "3.231.24.107",
+]
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula18-Built-in-Functions$
+~~~
+
+
+# Explicando o uso dos Outputs e algumas funções
+
+- Na saída do Output com os ips públicos, foi usado um asterisco, que é usado para acessar valores de um array.
+- No nosso caso o asterisco indica "traga todas as instancias". Então são trazidos todos os ips públicos delas.
+
+~~~hcl
+output "instance_public_ips" {
+  value = aws_instance.server.*.public_ip
+}
+~~~
+
+
+- Função join
+<https://www.terraform.io/language/functions/join>
+join produces a string by concatenating together all elements of a given list of strings with the given delimiter.
+  join(separator, list)
+
+Examples
+> join(", ", ["foo", "bar", "baz"])
+foo, bar, baz
+> join(", ", ["foo"])
+foo
+
+- A função Join  pega uma lista de valores e concatena os elementos com um delimitador.
+- No nosso caso o delimitador é uma virgula e um espaço.
+- Ele vai trazer os nomes de todas as instâncias, baseado na tag Name.
+
+~~~hcl
+output "instance_names" {
+  value = join(", ", aws_instance.server.*.tags.Name)
+}
+~~~
+
+
+
+terraform destroy -auto-approve
