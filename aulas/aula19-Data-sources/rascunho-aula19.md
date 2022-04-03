@@ -771,3 +771,26 @@ arn = data.terraform_remote_state.server.outputs.arn
 
 
 
+- Efetuar o destroy
+cd /home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula19-Data-sources/ec2
+terraform destroy -auto-approve
+
+~~~bash
+
+~~~
+
+
+cd /home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula19-Data-sources/s3
+terraform destroy -auto-approve
+
+~~~bash
+aws_s3_bucket_object.this: Destroying... [id=instances/instances-ami-015cfeb4e0d6306b2.json]
+aws_s3_bucket_object.this: Destruction complete after 1s
+aws_s3_bucket.this: Destroying... [id=my-bucket-gratefully-utterly-suddenly-peaceful-trout]
+aws_s3_bucket.this: Destruction complete after 1s
+random_pet.this: Destroying... [id=gratefully-utterly-suddenly-peaceful-trout]
+random_pet.this: Destruction complete after 0s
+
+Destroy complete! Resources: 3 destroyed.
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula19-Data-sources/s3$
+~~~
