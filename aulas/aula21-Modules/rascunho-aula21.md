@@ -493,9 +493,273 @@ resource "aws_s3_bucket" "this" {
 
 
 
+# Dynamic Blocks
+<https://www.terraform.io/language/expressions/dynamic-blocks>
 - Se formos tentar aplicar isto, ao tentar criar o bucket do "main.tf" da raíz, ele vai tentar alterar o Bucket do S3 e colocar a parte de Website nele, mesmo que a gente queira criar um Bucket simples. Para resolver isto, podemos usar no módulo do S3 uma feature do Terraform que é o "Dynamic Blocks".
 Usando o "Dynamic Blocks" passamos uma condição para o Terraform criar aquele recurso, dependendo da condição ele faz uma coisa.
 
 
 - Como o for_each pode substituir o count, eles tem funcionalidades parecidas.
 - No nosso caso vamos usar o for_each, pois podemos acessar informações especificas da nossa lista.
+- Iremos criar no "variables.tf" do s3_module uma variável do tipo Map, com valores em string, a variável será chamada "website". Ela vai ser iniciada com valor default vazio.
+aulas/aula21-Modules/s3_module/variables.tf
+
+~~~hcl
+variable "website" {
+  description = "Map containing website configuration."
+  type        = map(string)
+  default     = {}
+}
+~~~
+
+-
+
+
+# Função Keys
+
+keys(var.website)
+  "A função ""keys"" retorna as chaves.
+  No nosso caso a função ""keys"" retorna a lista de chaves da variável do tipo Map.
+
+
+# Explicando melhor sobre o for_each do Website
+
+- Iremos iterar usando o for_each.
+  ato de iterar (repetir) uma função por um determinado período de tempo até que uma condição seja alcançada. 
+  Iteração é o processo chamado na programação de repetição de uma ou mais ações. É importante salientar que cada iteração se refere a apenas uma instância da ação, ou seja, cada repetição possui uma ou mais iterações.
+- No nosso caso a função ""keys"" retorna a lista de chaves da variável do tipo Map.
+- A função "length" vai retornar a quantidade de chaves que a função "keys" retornou.
+- Se o valor for zerado, o retorno vai ser um Array vazio.
+- Caso o valor não seja zerado, vai retorna uma lista de 1 elemento, no caso a variável "website".
+  for_each = length(keys(var.website)) == 0 ? [] : [var.website]
+
+
+- Iremos acessar cada valor de dentro da nossa variável usando a função lookup.
+- O for_each está jogando os valores dentro do dynamic "website".
+Podemos acessar os valores das chaves e valores usando:
+  website.key
+  website.value
+E assim por diante.
+- Num bloco dinâmico, acessamos os valores com o nome que a gente definiu.
+- Acessando o valor do index_document:
+  index_document           = lookup(website.value, "index_document", null)
+
+- Nosso bloco de código para o Dynamic ficará assim, no main.tf do Module S3:
+  /home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules/s3_module/main.tf
+
+~~~hcl
+resource "aws_s3_bucket" "this" {
+  bucket = var.name
+  acl    = var.acl
+  policy = var.policy
+  tags   = var.tags
+
+  dynamic "website" {
+    for_each = length(keys(var.website)) == 0 ? [] : [var.website]
+    content {
+      index_document           = lookup(website.value, "index_document", null)
+      error_document           = lookup(website.value, "error_document", null)
+      redirect_all_requests_to = lookup(website.value, "redirect_all_requests_to", null)
+      routing_rules            = lookup(website.value, "routing_rules", null)
+    }
+  }
+~~~
+
+
+
+
+- Seguindo com as configurações, agora no main.tf da raíz.
+- Temos a criação do recurso random_pet, chamado "website", para definir um nome para o bucket do Website.
+- Usamos o módulo Website, criamos o bloco website, definindo os valores para index_document e error_document.
+- Precisamos criar uma Policy para o nosso bucket ficar acessível publicamente.
+
+~~~hcl
+resource "random_pet" "website" {
+  length = 5
+}
+
+module "website" {
+  source = "./s3_module"
+
+  name  = random_pet.website.id
+  acl   = "public-read"
+  files = "${path.root}/website"
+
+  website = {
+    index_document = "index.html"
+    error_document = "error.html"
+  }
+
+  policy = <<EOT
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${random_pet.website.id}/*"
+            ]
+        }
+    ]
+}
+EOT
+}
+~~~
+
+
+- Mesmo sendo um mesmo módulo que foi usado na criação do Bucket normal, precisamos rodar um Terraform init para que seja iniciado o módulo s3_module para o Website.
+- No estado atual, se for feito o apply e criar os recursos, o site não estará acessível, pois não foram criados os objetos com as páginas de index e de error.
+
+
+
+
+# Criando objetos
+
+- Para poder subir as páginas para o bucket, iremos criar um módulo de objetos.
+- Criar uma pasta chamada "s3_object" dentro da pasta "s3_module".
+  mkdir material-do-curso/curso-aws-com-terraform-master/02-terraform-intermediario/05-modules/s3_module/s3_object
+- Iremos criar 3 arquivos do Terraform:
+  main.tf
+  variables.tf
+  outputs.tf
+- O arquivo de variáveis tem 
+
+
+No arquivo main.tf
+setar o Content Type corretamente, usando a função lookup:
+  content_type = lookup(var.file_types, regex("\\.[^\\.]+\\z", var.src), var.default_file_type)
+
+- Exemplo do variables.tf que o lookup do Content Type varre, apenas um trecho:
+
+~~~hcl
+variable "file_types" {
+  description = "Map from file suffixes, which must begin with a period and contain no periods, to the corresponding Content-Type values."
+
+  type = map(string)
+  default = {
+    ".txt"    = "text/plain; charset=utf-8"
+    ".html"   = "text/html; charset=utf-8"
+    ".htm"    = "text/html; charset=utf-8"
+~~~
+
+- Reforçando um pouco sobre a função lookup:
+lookup retrieves the value of a single element from a map, given its key. If the given key does not exist, the given default value is returned instead.
+Example:
+  lookup(map, key, default)
+- Este exemplo abaixo procura o valor de "a" no "map", como ele existe, retorna o valor da "key" fornecida.
+> lookup({a=""ay"", b=""bee""}, ""a"", ""what?"")
+ay
+
+
+
+- O módulo do objeto vai ficar assim:
+
+- Arquivo main.tf
+
+~~~hcl
+resource "aws_s3_bucket_object" "this" {
+  bucket       = var.bucket
+  key          = var.key
+  source       = var.src
+  etag         = filemd5(var.src)
+  content_type = lookup(var.file_types, regex("\\.[^\\.]+\\z", var.src), var.default_file_type)
+}
+~~~
+
+
+- Arquivo variables.tf
+
+~~~hcl
+variable "bucket" {}
+variable "key" {}
+variable "src" {}
+
+# https://github.com/hashicorp/terraform-template-dir/blob/master/variables.tf
+variable "file_types" {
+  description = "Map from file suffixes, which must begin with a period and contain no periods, to the corresponding Content-Type values."
+
+  type = map(string)
+  default = {
+    ".txt"    = "text/plain; charset=utf-8"
+    ".html"   = "text/html; charset=utf-8"
+[.....................................................]
+    ".woff2"  = "font/woff2"
+  }
+}
+
+variable "default_file_type" {
+  type        = string
+  default     = "application/octet-stream"
+  description = "The Content-Type value to use for any files that don't match one of the suffixes given in file_types."
+}
+
+~~~
+
+- Arquivo outputs.tf
+
+~~~hcl
+output "file" {
+  value = "${var.bucket}${aws_s3_bucket_object.this.key}"
+}
+
+output "object_etag" {
+  value = aws_s3_bucket_object.this.etag
+}
+
+output "object_content_type" {
+  value = aws_s3_bucket_object.this.content_type
+}
+
+output "object_meta" {
+  value = aws_s3_bucket_object.this.metadata
+}
+~~~
+
+
+
+
+
+- De volta no módulo do s3_module.
+- Iremos usar um for_each para efetuar upload de + de 1 objeto por vez.
+- Se não é usado o for_each, temos que usar vários object toda vez.
+- Passando uma lista via for_each, podemos enviar vários arquivos para o S3 de uma só vez.
+- Usaremos a função fileset.
+
+# fileset Function
+
+<https://www.terraform.io/language/functions/fileset>
+
+fileset enumerates a set of regular file names given a path and pattern. The path is automatically removed from the resulting set of file names and any result still containing path separators always returns forward slash (/) as the path separator for cross-system compatibility.
+    fileset(path, pattern)
+
+- No nosso for_each, verificamos:
+  Se a variável files for diferente de vazio, execute o fileset
+    for_each = var.files != "" ? fileset(var.files, "**") : []
+
+- Explicando o uso dos padrões de combinações na função "fileset":
+  ** - matches any sequence of characters, including separator characters
+
+~~~hcl
+variable "key_prefix" {
+  type    = string
+  default = ""
+}
+
+variable "files" {
+  type    = string
+  default = ""
+}
+~~~
+
+
+
+
+
+# PENDENTE
+- Entender melhor como o valor da variável "var.files" é populado.
+- Detalhar o for_each.
