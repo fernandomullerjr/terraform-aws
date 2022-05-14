@@ -403,8 +403,8 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-
 # Website
 
 - Na nossa pasta "website" temos 2 arquivos:
-error.html
-index.html
+  error.html
+  index.html
 Estes 2 arquivos são usados na criação do site estático no bucket do S3.
 
 - Usaremos o recurso "s3_bucket" do Terraform:
@@ -412,11 +412,10 @@ Estes 2 arquivos são usados na criação do site estático no bucket do S3.
 
 - Static Website Hosting
 NOTE:
-The parameter website is deprecated. Use the resource aws_s3_bucket_website_configuration instead.
-O site do Terraform indica que a criação do parametro website está depreciada e indica o uso do recurso "aws_s3_bucket_website_configuration" no lugar dele.
-<https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_website_configuration>
-
-- Forma depreciada, indicada pelo site do "s3_bucket":
+  The parameter website is deprecated. Use the resource aws_s3_bucket_website_configuration instead.
+  O site do Terraform indica que a criação do parametro website está depreciada e indica o uso do recurso "aws_s3_bucket_website_configuration" no lugar dele.
+  <https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_website_configuration>
+  - Forma depreciada, indicada pelo site do "s3_bucket":
 
 ~~~hcl
 resource "aws_s3_bucket" "b" {
@@ -502,7 +501,7 @@ Usando o "Dynamic Blocks" passamos uma condição para o Terraform criar aquele 
 - Como o for_each pode substituir o count, eles tem funcionalidades parecidas.
 - No nosso caso vamos usar o for_each, pois podemos acessar informações especificas da nossa lista.
 - Iremos criar no "variables.tf" do s3_module uma variável do tipo Map, com valores em string, a variável será chamada "website". Ela vai ser iniciada com valor default vazio.
-aulas/aula21-Modules/s3_module/variables.tf
+  aulas/aula21-Modules/s3_module/variables.tf
 
 ~~~hcl
 variable "website" {
@@ -570,7 +569,7 @@ resource "aws_s3_bucket" "this" {
 
 - Seguindo com as configurações, agora no main.tf da raíz.
 - Temos a criação do recurso random_pet, chamado "website", para definir um nome para o bucket do Website.
-- Usamos o módulo Website, criamos o bloco website, definindo os valores para index_document e error_document.
+- Usamos o Módulo Website, criamos o bloco website, definindo os valores para index_document e error_document.
 - Precisamos criar uma Policy para o nosso bucket ficar acessível publicamente.
 
 ~~~hcl
@@ -730,6 +729,7 @@ output "object_meta" {
 - Passando uma lista via for_each, podemos enviar vários arquivos para o S3 de uma só vez.
 - Usaremos a função fileset.
 
+
 # fileset Function
 
 <https://www.terraform.io/language/functions/fileset>
@@ -763,3 +763,708 @@ variable "files" {
 # PENDENTE
 - Entender melhor como o valor da variável "var.files" é populado.
 - Detalhar o for_each.
+
+- Continuando aula em 15:05m
+- Continuando aula em 15:05m
+- Continuando aula em 15:05m
+
+- O for_each vai fazer uma varredura.
+- O retorno desta varredura será usado no "each.value" informado no "src".
+- No for_each é verificado uma lista de arquivos que a gente queira subir para o Bucket do S3.
+- Se a variável "var.files" for diferente de vazio, ele vai usar a função "Fileset". Ela varre um diretório, conforme a expressão que é passada, retornando uma lista de arquivos que existem dentro deste diretório. Os 2 asteriscos ** varrem pasta por pasta de forma recursiva.
+- São criadas as 2 variaveis "var.key_prefix" e "var.files" no arquivo variables.tf do tipo String, mas elas não são obrigatórias.
+
+~~~hcl
+module "objects" {
+  source = "./s3_object"
+
+  for_each = var.files != "" ? fileset(var.files, "**") : []
+
+  bucket = aws_s3_bucket.this.bucket
+  key    = "${var.key_prefix}/${each.value}"
+  src    = "${var.files}/${each.value}"
+}
+~~~
+
+
+
+
+
+- Voltar para a raíz do projeto.
+- Criar um arquivo contendo os outputs:
+outputs.tf
+
+~~~hcl
+output "bucket-name" {
+  value = module.bucket.name
+}
+
+output "bucket-arn" {
+  value = module.bucket.arn
+}
+
+output "bucket-website-name" {
+  value = module.website.name
+}
+
+output "bucket-website-url" {
+  value = module.website.website
+}
+
+output "bucket-website-arn" {
+  value = module.website.arn
+}
+
+output "bucket-website-files" {
+  value = module.website.files
+}
+~~~
+
+
+
+
+- Validar se tudo está ok.
+- USar o comando terraform fmt -recursive, para formatar tudo de forma recursiva
+- Rodar o terraform init para iniciar os módulos criados.
+- Rodar um terraform validate, para conferir se tudo está ok.
+terraform fmt -recursive
+terraform init
+terraform validate
+
+~~~bash
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform fmt -recursive
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform init
+Initializing modules...
+
+Initializing the backend...
+
+Initializing provider plugins...
+- Reusing previous version of hashicorp/aws from the dependency lock file
+- Reusing previous version of hashicorp/random from the dependency lock file
+- Using previously-installed hashicorp/aws v3.23.0
+- Using previously-installed hashicorp/random v3.1.2
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ ^C
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform validate
+Success! The configuration is valid.
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+~~~
+
+
+
+
+files = "${path.root}/website"
+Indicando o caminho da nossa raíz, usando a referencia "path.root".
+Desta forma, o Módulo Website vai ler todos os arquivos contidos na pasta Website.
+
+
+
+
+
+
+
+terraform plan
+
+~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform plan
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # random_pet.this will be created
+  + resource "random_pet" "this" {
+
+Plan: 6 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + bucket-arn           = (known after apply)
+  + bucket-name          = (known after apply)
+  + bucket-website-arn   = (known after apply)
+  + bucket-website-files = [
+      + "error.html",
+      + "index.html",
+    ]
+  + bucket-website-name  = (known after apply)
+  + bucket-website-url   = (known after apply)
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take exactly these actions if you run "terraform apply" now.
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ ^C
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ ^C
+~~~
+
+
+
+
+terraform apply -auto-approve
+
+~~~bash
+random_pet.this: Creating...
+random_pet.website: Creating...
+random_pet.this: Creation complete after 0s [id=hardly-sadly-lightly-mature-jay]
+random_pet.website: Creation complete after 0s [id=unlikely-highly-frequently-liberal-sturgeon]
+module.bucket.aws_s3_bucket.this: Creating...
+module.website.aws_s3_bucket.this: Creating...
+module.bucket.aws_s3_bucket.this: Still creating... [10s elapsed]
+module.website.aws_s3_bucket.this: Still creating... [10s elapsed]
+module.bucket.aws_s3_bucket.this: Creation complete after 11s [id=hardly-sadly-lightly-mature-jay]
+module.website.aws_s3_bucket.this: Creation complete after 12s [id=unlikely-highly-frequently-liberal-sturgeon]
+module.website.module.objects["index.html"].aws_s3_bucket_object.this: Creating...
+module.website.module.objects["error.html"].aws_s3_bucket_object.this: Creating...
+module.website.module.objects["error.html"].aws_s3_bucket_object.this: Creation complete after 2s [id=/error.html]
+module.website.module.objects["index.html"].aws_s3_bucket_object.this: Creation complete after 2s [id=/index.html]
+
+Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+bucket-arn = "arn:aws:s3:::hardly-sadly-lightly-mature-jay"
+bucket-name = "hardly-sadly-lightly-mature-jay"
+bucket-website-arn = "arn:aws:s3:::unlikely-highly-frequently-liberal-sturgeon"
+bucket-website-files = [
+  "error.html",
+  "index.html",
+]
+bucket-website-name = "unlikely-highly-frequently-liberal-sturgeon"
+bucket-website-url = "unlikely-highly-frequently-liberal-sturgeon.s3-website-us-east-1.amazonaws.com"
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+~~~
+
+
+
+
+
+- Após aplicados os recursos é possível acessar os endpoints da página principal e da página de erro
+  <http://unlikely-highly-frequently-liberal-sturgeon.s3-website-us-east-1.amazonaws.com/>
+  <http://unlikely-highly-frequently-liberal-sturgeon.s3-website-us-east-1.amazonaws.com/error.html>
+
+
+
+unlikely-highly-frequently-liberal-sturgeon.s3-website-us-east-1.amazonaws.com
+curl unlikely-highly-frequently-liberal-sturgeon.s3-website-us-east-1.amazonaws.com
+
+~~~html
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ curl unlikely-highly-frequently-liberal-sturgeon.s3-website-us-east-1.amazonaws.com
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Index page</title>
+</head>
+<body>
+<h1>Index page</h1>
+</body>
+</html>
+~~~
+
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+
+
+
+
+
+http://unlikely-highly-frequently-liberal-sturgeon.s3-website-us-east-1.amazonaws.com/error.html
+
+curl http://unlikely-highly-frequently-liberal-sturgeon.s3-website-us-east-1.amazonaws.com/error.html
+
+~~~html
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ curl http://unlikely-highly-frequently-liberal-sturgeon.s3-website-us-east-1.amazonaws.com/error.html
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Error page</title>
+</head>
+<body>
+<h1>Error page</h1>
+</body>
+</html>
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+~~~
+
+
+
+
+
+
+
+
+
+# PENDENTE
+- Entender melhor como o valor da variável "var.files" é populado. Que é citado no video por volta de 15min a 20min de aula.
+verificar retorno sobre a pergunta realizada no Udemy para o Cleber:
+<https://www.udemy.com/course/aws-com-terraform/learn/lecture/25939380#questions/17304468>
+- Detalhar o for_each.
+
+
+
+
+
+aulas/aula21-Modules/s3_module/main.tf
+
+  dynamic "versioning" {
+    for_each = length(keys(var.versioning)) == 0 ? [] : [var.versioning]
+    content {
+      enabled    = lookup(versioning.value, "enabled", null)
+      mfa_delete = lookup(versioning.value, "mfa_delete", null)
+    }
+  }
+}
+
+
+
+
+aulas/aula21-Modules/s3_module/variables.tf
+
+variable "versioning" {
+  description = "Map containing versioning configuration."
+  type        = map(string)
+  default     = {}
+}
+
+
+
+
+aulas/aula21-Modules/main.tf
+
+module "bucket" {
+  source = "./s3_module"
+  name   = random_pet.this.id
+
+  versioning = {
+    enabled = true
+  }
+}
+
+
+
+
+
+
+
+# ##################################################################################################################################################
+# ##################################################################################################################################################
+# Testando como o Terraform traz os valores dos outputs dos files.
+
+- Arquivo de Outputs do Módulo s3_module:
+aulas/aula21-Modules/s3_module/outputs.tf
+
+~~~hcl
+output "teste_files_15_04_2022" {
+  value = module.objects
+}
+~~~
+
+
+- Editando o arquivo outputs da raíz do projeto:
+aulas/aula21-Modules/outputs.tf
+
+~~~hcl
+output "teste_files_15_04_2022_da_raiz" {
+  value = module.website.teste_files_15_04_2022
+}
+~~~
+
+
+- Efetuando o plan, é possível verificar que o output de teste traz os dados "brutos", sem filtrar pelo filename:
+~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform plan
+random_pet.this: Refreshing state... [id=hardly-sadly-lightly-mature-jay]
+random_pet.website: Refreshing state... [id=unlikely-highly-frequently-liberal-sturgeon]
+module.bucket.aws_s3_bucket.this: Refreshing state... [id=hardly-sadly-lightly-mature-jay]
+module.website.aws_s3_bucket.this: Refreshing state... [id=unlikely-highly-frequently-liberal-sturgeon]
+module.website.module.objects["error.html"].aws_s3_bucket_object.this: Refreshing state... [id=/error.html]
+module.website.module.objects["index.html"].aws_s3_bucket_object.this: Refreshing state... [id=/index.html]
+
+Changes to Outputs:
+  + teste_files_15_04_2022_da_raiz = {
+      + error.html = {
+          + file                = "unlikely-highly-frequently-liberal-sturgeon/error.html"
+          + object_content_type = "text/html; charset=utf-8"
+          + object_etag         = "a079b6818095cae21bf0d42a9369c0a6"
+          + object_meta         = {}
+        }
+      + index.html = {
+          + file                = "unlikely-highly-frequently-liberal-sturgeon/index.html"
+          + object_content_type = "text/html; charset=utf-8"
+          + object_etag         = "52d363c05c4a68ceaa5a3d934a89be97"
+          + object_meta         = {}
+        }
+    }
+
+You can apply this plan to save these new output values to the Terraform state, without changing any real infrastructure.
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take exactly these actions if you run "terraform apply" now.
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+~~~
+
+
+
+
+
+
+~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform apply -auto-approve
+random_pet.this: Refreshing state... [id=hardly-sadly-lightly-mature-jay]
+random_pet.website: Refreshing state... [id=unlikely-highly-frequently-liberal-sturgeon]
+module.bucket.aws_s3_bucket.this: Refreshing state... [id=hardly-sadly-lightly-mature-jay]
+module.website.aws_s3_bucket.this: Refreshing state... [id=unlikely-highly-frequently-liberal-sturgeon]
+module.website.module.objects["index.html"].aws_s3_bucket_object.this: Refreshing state... [id=/index.html]
+module.website.module.objects["error.html"].aws_s3_bucket_object.this: Refreshing state... [id=/error.html]
+
+Changes to Outputs:
+  + teste_files_15_04_2022_da_raiz = {
+      + error.html = {
+          + file                = "unlikely-highly-frequently-liberal-sturgeon/error.html"
+          + object_content_type = "text/html; charset=utf-8"
+          + object_etag         = "a079b6818095cae21bf0d42a9369c0a6"
+          + object_meta         = {}
+        }
+      + index.html = {
+          + file                = "unlikely-highly-frequently-liberal-sturgeon/index.html"
+          + object_content_type = "text/html; charset=utf-8"
+          + object_etag         = "52d363c05c4a68ceaa5a3d934a89be97"
+          + object_meta         = {}
+        }
+    }
+
+You can apply this plan to save these new output values to the Terraform state, without changing any real infrastructure.
+
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+bucket-arn = "arn:aws:s3:::hardly-sadly-lightly-mature-jay"
+bucket-name = "hardly-sadly-lightly-mature-jay"
+bucket-website-arn = "arn:aws:s3:::unlikely-highly-frequently-liberal-sturgeon"
+bucket-website-files = [
+  "error.html",
+  "index.html",
+]
+bucket-website-name = "unlikely-highly-frequently-liberal-sturgeon"
+bucket-website-url = "unlikely-highly-frequently-liberal-sturgeon.s3-website-us-east-1.amazonaws.com"
+teste_files_15_04_2022_da_raiz = {
+  "error.html" = {
+    "file" = "unlikely-highly-frequently-liberal-sturgeon/error.html"
+    "object_content_type" = "text/html; charset=utf-8"
+    "object_etag" = "a079b6818095cae21bf0d42a9369c0a6"
+    "object_meta" = tomap({})
+  }
+  "index.html" = {
+    "file" = "unlikely-highly-frequently-liberal-sturgeon/index.html"
+    "object_content_type" = "text/html; charset=utf-8"
+    "object_etag" = "52d363c05c4a68ceaa5a3d934a89be97"
+    "object_meta" = tomap({})
+  }
+}
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+~~~
+
+
+
+~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ ^C
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform output teste_files_15_04_2022_da_raiz
+{
+  "error.html" = {
+    "file" = "unlikely-highly-frequently-liberal-sturgeon/error.html"
+    "object_content_type" = "text/html; charset=utf-8"
+    "object_etag" = "a079b6818095cae21bf0d42a9369c0a6"
+    "object_meta" = tomap({})
+  }
+  "index.html" = {
+    "file" = "unlikely-highly-frequently-liberal-sturgeon/index.html"
+    "object_content_type" = "text/html; charset=utf-8"
+    "object_etag" = "52d363c05c4a68ceaa5a3d934a89be97"
+    "object_meta" = tomap({})
+  }
+}
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+~~~
+
+
+
+
+
+- Explicando a expressão for do files.
+
+~~~hcl
+output "files" {
+  value = [for filename, data in module.objects : filename]
+}
+~~~
+
+Acessamos os valores do módulo "objects", pegando filename(key) e o data(value).
+Ao final, após os 2 pontos, informamos o que queremos trazer apenas, que no caso é o filename(key).
+Assim, ele traz uma lista mais sucinta dos arquivos.
+
+exemplo:
+
+~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform output bucket-website-files
+[
+  "error.html",
+  "index.html",
+]
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+~~~
+
+Que é o resultado do output do módulo s3_module:
+~~~hcl
+output "files" {
+  value = [for filename, data in module.objects : filename]
+}
+~~~
+
+Que é acessado pela raíz via output:
+~~~hcl
+output "bucket-website-files" {
+  value = module.website.files
+}
+~~~
+
+
+
+
+
+
+
+
+
+
+module "bucket" {
+  source = "./s3_module"
+  name   = random_pet.this.id
+
+  versioning = {
+    enabled = true
+  }
+}
+
+
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform output bucket-name
+"hardly-sadly-lightly-mature-jay"
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform output bucket-website-name
+"unlikely-highly-frequently-liberal-sturgeon"
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+
+
+
+
+
+27min de aula
+
+
+
+resource "aws_s3_bucket" "this" {
+  bucket = var.name
+  acl    = var.acl
+  policy = var.policy
+  tags   = var.tags
+
+
+
+- Se a variável não for obrigatória, ela precisa ter um valor default, mesmo que seja um valor vazio.
+- Se a variável for obrigatória, ela não pode ter um valor default. Então toda vez que a variável for passada, ela precisa de um valor.
+
+- Nos Outputs setamos valores que desejamos usar fora do módulo.
+
+
+
+
+
+
+
+
+
+# Teste
+explicando melhor as Chaves e Valores e como acessar elas.
+~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform output teste_files_15_04_2022_da_raiz
+{
+  "error.html" = {
+    "file" = "unlikely-highly-frequently-liberal-sturgeon/error.html"
+    "object_content_type" = "text/html; charset=utf-8"
+    "object_etag" = "a079b6818095cae21bf0d42a9369c0a6"
+    "object_meta" = tomap({})
+  }
+  "index.html" = {
+    "file" = "unlikely-highly-frequently-liberal-sturgeon/index.html"
+    "object_content_type" = "text/html; charset=utf-8"
+    "object_etag" = "52d363c05c4a68ceaa5a3d934a89be97"
+    "object_meta" = tomap({})
+  }
+}
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+~~~
+
+
+
+
+
+
+
+- Testando
+tentando colocar um output no s3_module para o output file do s3_object
+
+output "teste_apenas_file" {
+  value = module.objects.file
+}
+
+terraform console
+module.website.teste_files_15_04_2022
+
+terraform console
+module.website.teste_apenas_file
+
+deu erro:
+
+│ Error: Unsupported attribute
+│
+│   on s3_module/outputs.tf line 39, in output "teste_apenas_file":
+│   39:   value = module.objects.file
+│     ├────────────────
+│     │ module.objects is object with no attributes
+│
+│ This object does not have an attribute named "file".
+╵
+╷
+│ Error: Unsupported attribute
+│
+│   on s3_module/outputs.tf line 39, in output "teste_apenas_file":
+│   39:   value = module.objects.file
+│     ├────────────────
+│     │ module.objects is object with 2 attributes
+│
+│ This object does not have an attribute named "file".
+╵
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+
+
+
+
+Acessando os valores de um Map e buscando o ARN das instancias EC2.
+ [for k, v in aws_instance.this : v.arn]
+
+Output esperado:
+instance_arns = [
+  ""arn:aws:ec2:us-east-1:816678621138:instance/i-080275a5f2fd475a2"",
+  ""arn:aws:ec2:us-east-1:816678621138:instance/i-0cb0a3d60de140645"",
+]"	
+
+
+
+{
+  "error.html" = {
+    "file" = "unlikely-highly-frequently-liberal-sturgeon/error.html"
+
+
+output "pegando_file_path" {
+  value = [for k, v in module.objects : v.file]
+}
+
+
+
+- Criando no arquivo de outputs do módulo s3_module:
+aulas/aula21-Modules/s3_module/outputs.tf
+output "pegando_file_path" {
+  value = [for k, v in module.objects : v.file]
+}
+
+- Criando na raíz:
+aulas/aula21-Modules/outputs.tf
+output "pegando_file_path_da_raiz" {
+  value = module.website.pegando_file_path
+}
+
+-Efetuando plan para testar:
+  trouxe os valores das chaves dos objetos, que foram acessadas, no caso os valores das chaves "file".
+~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform plan
+random_pet.website: Refreshing state... [id=unlikely-highly-frequently-liberal-sturgeon]
+random_pet.this: Refreshing state... [id=hardly-sadly-lightly-mature-jay]
+module.website.aws_s3_bucket.this: Refreshing state... [id=unlikely-highly-frequently-liberal-sturgeon]
+module.bucket.aws_s3_bucket.this: Refreshing state... [id=hardly-sadly-lightly-mature-jay]
+module.website.module.objects["index.html"].aws_s3_bucket_object.this: Refreshing state... [id=/index.html]
+module.website.module.objects["error.html"].aws_s3_bucket_object.this: Refreshing state... [id=/error.html]
+
+Changes to Outputs:
+  + pegando_file_path_apartir_da_raiz = [
+      + "unlikely-highly-frequently-liberal-sturgeon/error.html",
+      + "unlikely-highly-frequently-liberal-sturgeon/index.html",
+    ]
+
+You can apply this plan to save these new output values to the Terraform state, without changing any real infrastructure.
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take exactly these actions if you run "terraform apply" now.
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+~~~
+
+
+
+
+terraform destroy -auto-approve
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform destroy -auto-approve
+module.website.module.objects["error.html"].aws_s3_bucket_object.this: Destroying... [id=/error.html]
+module.website.module.objects["index.html"].aws_s3_bucket_object.this: Destroying... [id=/index.html]
+module.bucket.aws_s3_bucket.this: Destroying... [id=hardly-sadly-lightly-mature-jay]
+module.website.module.objects["error.html"].aws_s3_bucket_object.this: Destruction complete after 1s
+module.website.module.objects["index.html"].aws_s3_bucket_object.this: Destruction complete after 1s
+module.website.aws_s3_bucket.this: Destroying... [id=unlikely-highly-frequently-liberal-sturgeon]
+module.bucket.aws_s3_bucket.this: Destruction complete after 1s
+random_pet.this: Destroying... [id=hardly-sadly-lightly-mature-jay]
+random_pet.this: Destruction complete after 0s
+module.website.aws_s3_bucket.this: Destruction complete after 0s
+random_pet.website: Destroying... [id=unlikely-highly-frequently-liberal-sturgeon]
+random_pet.website: Destruction complete after 0s
+
+Destroy complete! Resources: 6 destroyed.
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
+
+
+
+
+
+
+# PENDENTE
+- Entender melhor como o valor da variável "var.files" é populado. Que é citado no video por volta de 15min a 20min de aula. Não encontrei onde o valor dela é definido. É o valor vazio/null mesmo, setado no default?
+    aulas/aula21-Modules/s3_module/main.tf
+- Ver também sobre a variável "key_prefix", não encontrei onde o valor dela é definido. É o valor vazio/null mesmo, setado no default?
+- Verificar retorno sobre a pergunta realizada no Udemy para o Cleber:
+    <https://www.udemy.com/course/aws-com-terraform/learn/lecture/25939380#questions/17304468>
+- Detalhar o for_each.
+- Tentar criar um output que traga o valor da var.files, para entender o que ela coloca exatamente.
+
+- Video continua em 11:58m, repasando os pontos novamente.
+- Abrir explicações no word "Explicando-melhor-for-each-funcoes-dynamic-etc"

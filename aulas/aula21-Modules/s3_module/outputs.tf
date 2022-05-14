@@ -29,3 +29,11 @@ output "hosted_zone_id" {
 output "files" {
   value = [for filename, data in module.objects : filename]
 }
+
+output "teste_files_15_04_2022" {
+  value = module.objects
+}
+
+output "pegando_file_path" {
+  value = [for k, v in module.objects : v.file]
+}
