@@ -521,8 +521,10 @@ keys(var.website)
   No nosso caso a função ""keys"" retorna a lista de chaves da variável do tipo Map.
 
 
-# Explicando melhor sobre o for_each do Website
+# Explicando melhor sobre o for_each do Website, dentro do módulo S3_MODULE
 
+- Abrindo o arquivo main.tf do S3_MODULE:
+  /home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules/s3_module/main.tf
 - Iremos iterar usando o for_each.
   ato de iterar (repetir) uma função por um determinado período de tempo até que uma condição seja alcançada. 
   Iteração é o processo chamado na programação de repetição de uma ou mais ações. É importante salientar que cada iteração se refere a apenas uma instância da ação, ou seja, cada repetição possui uma ou mais iterações.
@@ -530,8 +532,9 @@ keys(var.website)
 - A função "length" vai retornar a quantidade de chaves que a função "keys" retornou.
 - Se o valor for zerado, o retorno vai ser um Array vazio.
 - Caso o valor não seja zerado, vai retorna uma lista de 1 elemento, no caso a variável "website".
+~~~~h
   for_each = length(keys(var.website)) == 0 ? [] : [var.website]
-
+~~~~
 
 - Iremos acessar cada valor de dentro da nossa variável usando a função lookup.
 - O for_each está jogando os valores dentro do dynamic "website".
@@ -546,7 +549,7 @@ E assim por diante.
 - Nosso bloco de código para o Dynamic ficará assim, no main.tf do Module S3:
   /home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules/s3_module/main.tf
 
-~~~hcl
+~~~h
 resource "aws_s3_bucket" "this" {
   bucket = var.name
   acl    = var.acl
@@ -631,11 +634,14 @@ EOT
 
 No arquivo main.tf
 setar o Content Type corretamente, usando a função lookup:
+~~~~h
   content_type = lookup(var.file_types, regex("\\.[^\\.]+\\z", var.src), var.default_file_type)
+~~~~
+
 
 - Exemplo do variables.tf que o lookup do Content Type varre, apenas um trecho:
 
-~~~hcl
+~~~h
 variable "file_types" {
   description = "Map from file suffixes, which must begin with a period and contain no periods, to the corresponding Content-Type values."
 
@@ -646,6 +652,8 @@ variable "file_types" {
     ".htm"    = "text/html; charset=utf-8"
 ~~~
 
+
+# LOOKUP function
 - Reforçando um pouco sobre a função lookup:
 lookup retrieves the value of a single element from a map, given its key. If the given key does not exist, the given default value is returned instead.
 Example:
@@ -656,11 +664,25 @@ ay
 
 
 
+# REGEX function
+<https://www.terraform.io/language/functions/regex>
+
+~~~~h
+resource "aws_s3_bucket_object" "this" {
+  bucket       = var.bucket
+  key          = var.key
+  source       = var.src
+  etag         = filemd5(var.src)
+  content_type = lookup(var.file_types, regex("\\.[^\\.]+\\z", var.src), var.default_file_type)
+}
+~~~~
+
+
 - O módulo do objeto vai ficar assim:
 
 - Arquivo main.tf
 
-~~~hcl
+~~~h
 resource "aws_s3_bucket_object" "this" {
   bucket       = var.bucket
   key          = var.key
@@ -673,7 +695,7 @@ resource "aws_s3_bucket_object" "this" {
 
 - Arquivo variables.tf
 
-~~~hcl
+~~~h
 variable "bucket" {}
 variable "key" {}
 variable "src" {}
@@ -698,6 +720,10 @@ variable "default_file_type" {
 }
 
 ~~~
+
+
+
+
 
 - Arquivo outputs.tf
 
@@ -739,17 +765,17 @@ fileset enumerates a set of regular file names given a path and pattern. The pat
 
 - No nosso for_each, verificamos:
   Se a variável files for diferente de vazio, execute o fileset
+~~~~h
     for_each = var.files != "" ? fileset(var.files, "**") : []
+~~~~
 
 - Explicando o uso dos padrões de combinações na função "fileset":
   ** - matches any sequence of characters, including separator characters
 
-~~~hcl
-variable "key_prefix" {
-  type    = string
-  default = ""
-}
 
+- Variável "files" no arquivo variables.tf do S3_MODULE:
+
+~~~h
 variable "files" {
   type    = string
   default = ""
@@ -757,6 +783,19 @@ variable "files" {
 ~~~
 
 
+- O módulo dos Objetos no arquivo main.tf do S3_MODULE:
+
+~~~~h
+module "objects" {
+  source = "./s3_object"
+
+  for_each = var.files != "" ? fileset(var.files, "**") : []
+
+  bucket = aws_s3_bucket.this.bucket
+  key    = "${var.key_prefix}/${each.value}"
+  src    = "${var.files}/${each.value}"
+}
+~~~~
 
 
 
@@ -772,9 +811,10 @@ variable "files" {
 - O retorno desta varredura será usado no "each.value" informado no "src".
 - No for_each é verificado uma lista de arquivos que a gente queira subir para o Bucket do S3.
 - Se a variável "var.files" for diferente de vazio, ele vai usar a função "Fileset". Ela varre um diretório, conforme a expressão que é passada, retornando uma lista de arquivos que existem dentro deste diretório. Os 2 asteriscos ** varrem pasta por pasta de forma recursiva.
+    fileset(path, pattern)
 - São criadas as 2 variaveis "var.key_prefix" e "var.files" no arquivo variables.tf do tipo String, mas elas não são obrigatórias.
 
-~~~hcl
+~~~h
 module "objects" {
   source = "./s3_object"
 
@@ -1468,3 +1508,9 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-
 
 - Video continua em 11:58m, repasando os pontos novamente.
 - Abrir explicações no word "Explicando-melhor-for-each-funcoes-dynamic-etc"
+
+
+
+# Dia 19/06/2022
+- Recapitulando os tópicos.
+- Ver resposta do Cleber.
