@@ -1058,11 +1058,8 @@ verificar retorno sobre a pergunta realizada no Udemy para o Cleber:
 - Detalhar o for_each.
 
 
-
-
-
 aulas/aula21-Modules/s3_module/main.tf
-
+~~~h
   dynamic "versioning" {
     for_each = length(keys(var.versioning)) == 0 ? [] : [var.versioning]
     content {
@@ -1071,23 +1068,22 @@ aulas/aula21-Modules/s3_module/main.tf
     }
   }
 }
-
-
+~~~
 
 
 aulas/aula21-Modules/s3_module/variables.tf
-
+~~~h
 variable "versioning" {
   description = "Map containing versioning configuration."
   type        = map(string)
   default     = {}
 }
-
+~~~
 
 
 
 aulas/aula21-Modules/main.tf
-
+~~~h
 module "bucket" {
   source = "./s3_module"
   name   = random_pet.this.id
@@ -1096,7 +1092,7 @@ module "bucket" {
     enabled = true
   }
 }
-
+~~~
 
 
 
@@ -1226,6 +1222,8 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-
 
 
 
+- Usando o comando "terraform output" para trazer o output especifico de um Output desejado:
+
 ~~~bash
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ ^C
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform output teste_files_15_04_2022_da_raiz
@@ -1259,7 +1257,7 @@ output "files" {
 ~~~
 
 Acessamos os valores do módulo "objects", pegando filename(key) e o data(value).
-Ao final, após os 2 pontos, informamos o que queremos trazer apenas, que no caso é o filename(key).
+Ao final, após os 2 pontos, informamos o que queremos trazer apenas, que no caso é o filename(key/chave).
 Assim, ele traz uma lista mais sucinta dos arquivos.
 
 exemplo:
@@ -1274,14 +1272,14 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-
 ~~~
 
 Que é o resultado do output do módulo s3_module:
-~~~hcl
+~~~h
 output "files" {
   value = [for filename, data in module.objects : filename]
 }
 ~~~
 
 Que é acessado pela raíz via output:
-~~~hcl
+~~~h
 output "bucket-website-files" {
   value = module.website.files
 }
@@ -1295,7 +1293,7 @@ output "bucket-website-files" {
 
 
 
-
+~~~h
 module "bucket" {
   source = "./s3_module"
   name   = random_pet.this.id
@@ -1304,9 +1302,9 @@ module "bucket" {
     enabled = true
   }
 }
+~~~
 
-
-
+~~~bash
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform output bucket-name
 "hardly-sadly-lightly-mature-jay"
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
@@ -1315,7 +1313,7 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-
 "unlikely-highly-frequently-liberal-sturgeon"
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
-
+~~~
 
 
 
@@ -1323,13 +1321,13 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-
 27min de aula
 
 
-
+~~~h
 resource "aws_s3_bucket" "this" {
   bucket = var.name
   acl    = var.acl
   policy = var.policy
   tags   = var.tags
-
+~~~
 
 
 - Se a variável não for obrigatória, ela precisa ter um valor default, mesmo que seja um valor vazio.
@@ -1374,10 +1372,11 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-
 
 - Testando
 tentando colocar um output no s3_module para o output file do s3_object
-
+~~~h
 output "teste_apenas_file" {
   value = module.objects.file
 }
+~~~
 
 terraform console
 module.website.teste_files_15_04_2022
@@ -1385,8 +1384,10 @@ module.website.teste_files_15_04_2022
 terraform console
 module.website.teste_apenas_file
 
-deu erro:
 
+- Apresentou erro:
+
+~~~bash
 │ Error: Unsupported attribute
 │
 │   on s3_module/outputs.tf line 39, in output "teste_apenas_file":
@@ -1407,7 +1408,7 @@ deu erro:
 │ This object does not have an attribute named "file".
 ╵
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
-
+~~~
 
 
 
@@ -1415,11 +1416,13 @@ Acessando os valores de um Map e buscando o ARN das instancias EC2.
  [for k, v in aws_instance.this : v.arn]
 
 Output esperado:
+
+~~~h
 instance_arns = [
   ""arn:aws:ec2:us-east-1:816678621138:instance/i-080275a5f2fd475a2"",
   ""arn:aws:ec2:us-east-1:816678621138:instance/i-0cb0a3d60de140645"",
 ]"	
-
+~~~
 
 
 {
@@ -1435,18 +1438,27 @@ output "pegando_file_path" {
 
 - Criando no arquivo de outputs do módulo s3_module:
 aulas/aula21-Modules/s3_module/outputs.tf
+
+~~~h
 output "pegando_file_path" {
   value = [for k, v in module.objects : v.file]
 }
+~~~
+
 
 - Criando na raíz:
 aulas/aula21-Modules/outputs.tf
+
+~~~h
 output "pegando_file_path_da_raiz" {
   value = module.website.pegando_file_path
 }
+~~~
+
 
 -Efetuando plan para testar:
-  trouxe os valores das chaves dos objetos, que foram acessadas, no caso os valores das chaves "file".
+  trouxe os valores das chaves dos objetos, que foram acessadas, no caso os valores/value das chaves/keys "file".
+
 ~~~bash
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform plan
 random_pet.website: Refreshing state... [id=unlikely-highly-frequently-liberal-sturgeon]
@@ -1475,6 +1487,7 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-
 
 terraform destroy -auto-approve
 
+~~~bash
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform destroy -auto-approve
 module.website.module.objects["error.html"].aws_s3_bucket_object.this: Destroying... [id=/error.html]
 module.website.module.objects["index.html"].aws_s3_bucket_object.this: Destroying... [id=/index.html]
@@ -1491,7 +1504,7 @@ random_pet.website: Destruction complete after 0s
 
 Destroy complete! Resources: 6 destroyed.
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$
-
+~~~
 
 
 
@@ -1508,9 +1521,289 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-
 
 - Video continua em 11:58m, repasando os pontos novamente.
 - Abrir explicações no word "Explicando-melhor-for-each-funcoes-dynamic-etc"
-
+- Continuar na linha 1055.
 
 
 # Dia 19/06/2022
 - Recapitulando os tópicos.
 - Ver resposta do Cleber.
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$ history | tail
+  505  git status
+  506  git status
+  507  git remote -v
+  508  eval $(ssh-agent -s)
+  509  ssh-add /home/fernando/.ssh/chave-debian10-github
+  510  git status
+  511  git add .
+  512  git commit -m "Aula 21 - modules - detalhando o for_each e fileset."
+  513  git push
+  514  history | tail
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws$
+
+
+- Continuar na linha 1055.
+
+
+
+
+
+
+# Dia 25/06/2022
+Exemplo:
+~~~~h
+module.objects = {
+  "meu_site/index.html" = {
+   // aqui vai os outputs do módulo
+  },
+  "meu_site/error.html" = {
+   // aqui vai os outputs do módulo
+  },
+}
+~~~~
+
+
+
+
+- Efetuado um apply para verificar os Outputs e os valores dos Outputs de teste:
+
+~~~~bash
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ pwd
+/home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ terraform apply --auto-approve
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # random_pet.this will be created
+  + resource "random_pet" "this" {
+      + id        = (known after apply)
+      + length    = 5
+      + separator = "-"
+    }
+
+  # random_pet.website will be created
+  + resource "random_pet" "website" {
+      + id        = (known after apply)
+      + length    = 5
+      + separator = "-"
+    }
+
+  # module.bucket.aws_s3_bucket.this will be created
+  + resource "aws_s3_bucket" "this" {
+      + acceleration_status         = (known after apply)
+      + acl                         = "private"
+      + arn                         = (known after apply)
+      + bucket                      = (known after apply)
+      + bucket_domain_name          = (known after apply)
+      + bucket_regional_domain_name = (known after apply)
+      + force_destroy               = false
+      + hosted_zone_id              = (known after apply)
+      + id                          = (known after apply)
+      + region                      = (known after apply)
+      + request_payer               = (known after apply)
+      + website_domain              = (known after apply)
+      + website_endpoint            = (known after apply)
+
+      + versioning {
+          + enabled    = true
+          + mfa_delete = false
+        }
+    }
+
+  # module.website.aws_s3_bucket.this will be created
+  + resource "aws_s3_bucket" "this" {
+      + acceleration_status         = (known after apply)
+      + acl                         = "public-read"
+      + arn                         = (known after apply)
+      + bucket                      = (known after apply)
+      + bucket_domain_name          = (known after apply)
+      + bucket_regional_domain_name = (known after apply)
+      + force_destroy               = false
+      + hosted_zone_id              = (known after apply)
+      + id                          = (known after apply)
+      + policy                      = (known after apply)
+      + region                      = (known after apply)
+      + request_payer               = (known after apply)
+      + website_domain              = (known after apply)
+      + website_endpoint            = (known after apply)
+
+      + versioning {
+          + enabled    = (known after apply)
+          + mfa_delete = (known after apply)
+        }
+
+      + website {
+          + error_document = "error.html"
+          + index_document = "index.html"
+        }
+    }
+
+  # module.website.module.objects["error.html"].aws_s3_bucket_object.this will be created
+  + resource "aws_s3_bucket_object" "this" {
+      + acl                    = "private"
+      + bucket                 = (known after apply)
+      + content_type           = "text/html; charset=utf-8"
+      + etag                   = "a079b6818095cae21bf0d42a9369c0a6"
+      + force_destroy          = false
+      + id                     = (known after apply)
+      + key                    = "/error.html"
+      + kms_key_id             = (known after apply)
+      + server_side_encryption = (known after apply)
+      + source                 = "./website/error.html"
+      + storage_class          = (known after apply)
+      + version_id             = (known after apply)
+    }
+
+  # module.website.module.objects["index.html"].aws_s3_bucket_object.this will be created
+  + resource "aws_s3_bucket_object" "this" {
+      + acl                    = "private"
+      + bucket                 = (known after apply)
+      + content_type           = "text/html; charset=utf-8"
+      + etag                   = "52d363c05c4a68ceaa5a3d934a89be97"
+      + force_destroy          = false
+      + id                     = (known after apply)
+      + key                    = "/index.html"
+      + kms_key_id             = (known after apply)
+      + server_side_encryption = (known after apply)
+      + source                 = "./website/index.html"
+      + storage_class          = (known after apply)
+      + version_id             = (known after apply)
+    }
+
+Plan: 6 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + bucket-arn                        = (known after apply)
+  + bucket-name                       = (known after apply)
+  + bucket-website-arn                = (known after apply)
+  + bucket-website-files              = [
+      + "error.html",
+      + "index.html",
+    ]
+  + bucket-website-name               = (known after apply)
+  + bucket-website-url                = (known after apply)
+  + pegando_file_path_apartir_da_raiz = [
+      + (known after apply),
+      + (known after apply),
+    ]
+  + teste_files_15_04_2022_da_raiz    = {
+      + error.html = {
+          + file                = (known after apply)
+          + object_content_type = "text/html; charset=utf-8"
+          + object_etag         = "a079b6818095cae21bf0d42a9369c0a6"
+          + object_meta         = null
+        }
+      + index.html = {
+          + file                = (known after apply)
+          + object_content_type = "text/html; charset=utf-8"
+          + object_etag         = "52d363c05c4a68ceaa5a3d934a89be97"
+          + object_meta         = null
+        }
+    }
+random_pet.website: Creating...
+random_pet.this: Creating...
+random_pet.website: Creation complete after 0s [id=deadly-privately-pleasantly-uncommon-ox]
+random_pet.this: Creation complete after 0s [id=vertically-supposedly-morally-actual-escargot]
+module.website.aws_s3_bucket.this: Creating...
+module.bucket.aws_s3_bucket.this: Creating...
+module.bucket.aws_s3_bucket.this: Still creating... [10s elapsed]
+module.website.aws_s3_bucket.this: Still creating... [10s elapsed]
+module.bucket.aws_s3_bucket.this: Creation complete after 11s [id=vertically-supposedly-morally-actual-escargot]
+module.website.aws_s3_bucket.this: Creation complete after 13s [id=deadly-privately-pleasantly-uncommon-ox]
+module.website.module.objects["error.html"].aws_s3_bucket_object.this: Creating...
+module.website.module.objects["index.html"].aws_s3_bucket_object.this: Creating...
+module.website.module.objects["error.html"].aws_s3_bucket_object.this: Creation complete after 2s [id=/error.html]
+module.website.module.objects["index.html"].aws_s3_bucket_object.this: Creation complete after 2s [id=/index.html]
+
+Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+bucket-arn = "arn:aws:s3:::vertically-supposedly-morally-actual-escargot"
+bucket-name = "vertically-supposedly-morally-actual-escargot"
+bucket-website-arn = "arn:aws:s3:::deadly-privately-pleasantly-uncommon-ox"
+bucket-website-files = [
+  "error.html",
+  "index.html",
+]
+bucket-website-name = "deadly-privately-pleasantly-uncommon-ox"
+bucket-website-url = "deadly-privately-pleasantly-uncommon-ox.s3-website-us-east-1.amazonaws.com"
+pegando_file_path_apartir_da_raiz = [
+  "deadly-privately-pleasantly-uncommon-ox/error.html",
+  "deadly-privately-pleasantly-uncommon-ox/index.html",
+]
+teste_files_15_04_2022_da_raiz = {
+  "error.html" = {
+    "file" = "deadly-privately-pleasantly-uncommon-ox/error.html"
+    "object_content_type" = "text/html; charset=utf-8"
+    "object_etag" = "a079b6818095cae21bf0d42a9369c0a6"
+    "object_meta" = tomap(null) /* of string */
+  }
+  "index.html" = {
+    "file" = "deadly-privately-pleasantly-uncommon-ox/index.html"
+    "object_content_type" = "text/html; charset=utf-8"
+    "object_etag" = "52d363c05c4a68ceaa5a3d934a89be97"
+    "object_meta" = tomap(null) /* of string */
+  }
+}
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules$ ^C
+
+~~~~
+
+
+
+
+- Efetuado o DESTROY:
+
+~~~~bash
+
+Plan: 0 to add, 0 to change, 6 to destroy.
+
+Changes to Outputs:
+  - bucket-arn                        = "arn:aws:s3:::vertically-supposedly-morally-actual-escargot" -> null
+  - bucket-name                       = "vertically-supposedly-morally-actual-escargot" -> null
+  - bucket-website-arn                = "arn:aws:s3:::deadly-privately-pleasantly-uncommon-ox" -> null
+  - bucket-website-files              = [
+      - "error.html",
+      - "index.html",
+    ] -> null
+  - bucket-website-name               = "deadly-privately-pleasantly-uncommon-ox" -> null
+  - bucket-website-url                = "deadly-privately-pleasantly-uncommon-ox.s3-website-us-east-1.amazonaws.com" -> null
+  - pegando_file_path_apartir_da_raiz = [
+      - "deadly-privately-pleasantly-uncommon-ox/error.html",
+      - "deadly-privately-pleasantly-uncommon-ox/index.html",
+    ] -> null
+  - teste_files_15_04_2022_da_raiz    = {
+      - error.html = {
+          - file                = "deadly-privately-pleasantly-uncommon-ox/error.html"
+          - object_content_type = "text/html; charset=utf-8"
+          - object_etag         = "a079b6818095cae21bf0d42a9369c0a6"
+          - object_meta         = {}
+        }
+      - index.html = {
+          - file                = "deadly-privately-pleasantly-uncommon-ox/index.html"
+          - object_content_type = "text/html; charset=utf-8"
+          - object_etag         = "52d363c05c4a68ceaa5a3d934a89be97"
+          - object_meta         = {}
+        }
+    } -> null
+module.website.module.objects["index.html"].aws_s3_bucket_object.this: Destroying... [id=/index.html]
+module.website.module.objects["error.html"].aws_s3_bucket_object.this: Destroying... [id=/error.html]
+module.bucket.aws_s3_bucket.this: Destroying... [id=vertically-supposedly-morally-actual-escargot]
+module.website.module.objects["index.html"].aws_s3_bucket_object.this: Destruction complete after 0s
+module.website.module.objects["error.html"].aws_s3_bucket_object.this: Destruction complete after 0s
+module.website.aws_s3_bucket.this: Destroying... [id=deadly-privately-pleasantly-uncommon-ox]
+module.bucket.aws_s3_bucket.this: Destruction complete after 0s
+random_pet.this: Destroying... [id=vertically-supposedly-morally-actual-escargot]
+random_pet.this: Destruction complete after 0s
+module.website.aws_s3_bucket.this: Destruction complete after 1s
+random_pet.website: Destroying... [id=deadly-privately-pleasantly-uncommon-ox]
+random_pet.website: Destruction complete after 0s
+
+Destroy complete! Resources: 6 destroyed.
+
+~~~~
