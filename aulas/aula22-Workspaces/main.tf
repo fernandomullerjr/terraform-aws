@@ -16,7 +16,7 @@ terraform {
     dynamodb_table = "tflock-tfstate-816678621138"
   }
 }
-
+#provider
 provider "aws" {
   region  = lookup(var.aws_region, local.env)
   profile = "fernandomuller"

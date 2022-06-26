@@ -409,3 +409,136 @@ arquivo de lock
     "Path": "tfstate-816678621138/env:/dev/05-workspaces/terraform.tfstate"
 }
 ~~~~
+
+
+
+
+- Criada 1 máquina na região da Virginia, devido estar no Workspace de dev:
+
+~~~~bash
+Plan: 1 to add, 0 to change, 0 to destroy.
+aws_instance.web[0]: Creating...
+aws_instance.web[0]: Still creating... [10s elapsed]
+aws_instance.web[0]: Still creating... [20s elapsed]
+aws_instance.web[0]: Still creating... [30s elapsed]
+aws_instance.web[0]: Still creating... [40s elapsed]
+aws_instance.web[0]: Creation complete after 40s [id=i-0d7a9a678349b17cb]
+Releasing state lock. This may take a few moments...
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$
+~~~~
+
+
+
+
+- Criando mais um workspace.
+
+terraform workspace new stage
+
+- Verificando no bucket do S3, já existe a pasta para o novo Workspace chamado "stage".
+
+- Não é possível deletar um Workspace, quando se está usando ele:
+
+~~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace new stage
+Created and switched to workspace "stage"!
+
+You re now on a new, empty workspace. Workspaces isolate their state,
+so if you run "terraform plan" Terraform will not see any existing state
+for this configuration.
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace list
+  default
+  dev
+* stage
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace delete stage
+Workspace "stage" is your active workspace.
+
+You cannot delete the currently active workspace. Please switch
+to another workspace and try again.
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$
+~~~~
+
+
+
+
+
+- Alternando novamente para o Workspace "dev", para poder deletar o Workspace "stage"
+terraform workspace select dev
+
+
+- Comando para deletar o Workspace "stage"
+terraform workspace delete stage
+
+~~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace select dev
+Switched to workspace "dev".
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace delete stage
+Acquiring state lock. This may take a few moments...
+Releasing state lock. This may take a few moments...
+Deleted workspace "stage"!
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$
+~~~~
+
+
+Verificando no Bucket do S3, entradas referentes ao Workspace "stage" foram deletadas também.
+
+
+
+
+
+
+- Efetuando a limpeza geral.
+- Destroy dos recursos criados via Workspace "dev".
+- Remoção dos Workspaces.
+- Conferindo bucket do S3 e DynamoDB.
+- Validando terminate das EC2.
+-
+
+
+terraform destroy --auto-approve
+terraform destroy --auto-approve
+terraform workspace list
+terraform workspace select default
+terraform workspace delete dev
+terraform workspace list
+
+
+~~~~bash
+Plan: 0 to add, 0 to change, 1 to destroy.
+aws_instance.web[0]: Destroying... [id=i-0d7a9a678349b17cb]
+aws_instance.web[0]: Still destroying... [id=i-0d7a9a678349b17cb, 10s elapsed]
+aws_instance.web[0]: Still destroying... [id=i-0d7a9a678349b17cb, 20s elapsed]
+aws_instance.web[0]: Still destroying... [id=i-0d7a9a678349b17cb, 30s elapsed]
+aws_instance.web[0]: Destruction complete after 33s
+Releasing state lock. This may take a few moments...
+
+Destroy complete! Resources: 1 destroyed.
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ ^C
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ ^C
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ ^C
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ ^C
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ ^C
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace list
+  default
+* dev
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace select default
+Switched to workspace "default".
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace delete dev
+Acquiring state lock. This may take a few moments...
+Releasing state lock. This may take a few moments...
+Deleted workspace "dev"!
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace list
+* default
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$
+~~~~
