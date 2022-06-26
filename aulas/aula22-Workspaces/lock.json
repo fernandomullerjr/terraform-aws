@@ -1,0 +1,9 @@
+{
+    "ID": "b586746f-77bf-95c7-2917-7f8aa5c7ccf8",
+    "Operation": "OperationTypeApply",
+    "Info": "",
+    "Who": "fernando@debian10x64",
+    "Version": "1.1.5",
+    "Created": "2022-06-26T15:14:26.155851479Z",
+    "Path": "tfstate-816678621138/env:/dev/05-workspaces/terraform.tfstate"
+}

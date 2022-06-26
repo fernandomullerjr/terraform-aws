@@ -294,6 +294,7 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-
 - Simulando aplicação no Workspace de prod.
 - Como as variaveis de prod criariam 3 maquinas, no terraform plan constam 3 to add.
 
+~~~~bash
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform plan
 Acquiring state lock. This may take a few moments...
 
@@ -316,9 +317,95 @@ Terraform will perform the following actions:
 Plan: 3 to add, 0 to change, 0 to destroy.
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+~~~~
 
 
 
 
-
+# pendente
 - Continua em 12min
+- Ver questões sobre deletar o workspace, DynamoDB, Destroy, Lock, S3, 
+- Ver diferença entre Workspace da Cloud e esse.
+
+~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula17-Remote-state-no-S3/00-remote-state-bucket
+
+
+
+
+
+# Dia 26/06/2022
+
+- Um registro é criado a cada Workspace que é criado no Terraform, esse registro é um item no DynamoDB. Ele contem um LockID.
+
+
+- Alternando para o Workspace dev e efetuando plan para ver quantos recursos vão ser criados:
+
+~~~~bash
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace list
+  default
+  dev
+* prod
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace select dev
+Switched to workspace "dev".
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace list
+  default
+* dev
+  prod
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform workspace delete prod
+Acquiring state lock. This may take a few moments...
+Releasing state lock. This may take a few moments...
+Deleted workspace "prod"!
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ ^C
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ terraform plan
+Acquiring state lock. This may take a few moments...
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_instance.web[0] will be created
+  + resource "aws_instance" "web" {
+      + ami                          = "ami-08d4ac5b634553e16"
+      + associate_public_ip_address  = (known after apply)
+      + availability_zone            = (known after apply)
+[.................]
+      + root_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+        }
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ ^C
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces$ ^C
+~~~~
+
+
+
+
+terraform apply --auto-approve
+
+
+- Durante o Apply no Workspace, é gerado um item na tabela do DynamoDB, refernete a ação do Apply, contendo detalhes como o ID da operação, nome da operação, quem aplicou, versão do Terraform, data da criação e o path do Terraform State do Workspace em questão:
+
+arquivo de lock
+/home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula22-Workspaces/lock.json
+
+~~~~json
+{
+    "ID": "b586746f-77bf-95c7-2917-7f8aa5c7ccf8",
+    "Operation": "OperationTypeApply",
+    "Info": "",
+    "Who": "fernando@debian10x64",
+    "Version": "1.1.5",
+    "Created": "2022-06-26T15:14:26.155851479Z",
+    "Path": "tfstate-816678621138/env:/dev/05-workspaces/terraform.tfstate"
+}
+~~~~
