@@ -3,6 +3,7 @@
 
 # Dia 30/06/2022
 
+# ####################################################################################################################################
 # null_resource
 
 <https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource>
@@ -63,11 +64,66 @@ resource "null_resource" "cluster" {
 # ################################################################################################################################################################
 # ################################################################################################################################################################
 # ################################################################################################################################################################
+# Explicação 2 - Site Runebook
+<https://runebook.dev/pt/docs/terraform/providers/null/resource>
+
+# Null Resource
+O recurso null_resource implementa o ciclo de vida do recurso padrão, mas não executa nenhuma ação adicional.
+O argumento triggers permite especificar um conjunto arbitrário de valores que, ao serem alterados, farão com que o recurso seja substituído.
+
+- Example Usage:
+O caso de utilização primária do recurso nulo é como um contentor de nada para acções arbitrárias tomadas por um abastecedor,como se segue:
+
+~~~~h
+resource "aws_instance" "cluster" {
+  count = 3
+
+  # ...
+}
+~~~~
+
+~~~~h
+resource "null_resource" "cluster" {
+  # Alterações em qualquer instância do cluster requerem reprovisionamento
+  triggers = {
+    cluster_instance_ids = "${join(",", aws_instance.cluster.*.id)}"
+  }
+
+  # O script de bootstrap pode ser executado em qualquer instância do cluster
+  # Então nós apenas escolhemos o primeiro neste caso
+  connection {
+    host = "${element(aws_instance.cluster.*.public_ip, 0)}"
+  }
+
+  provisioner "local-exec" {
+    # Script de bootstrap chamado com private_ip de cada nó no clutser
+    command = "bootstrap-cluster.sh ${join(" ", aws_instance.cluster.*.private_ip)}"
+  }
+}
+~~~~
+
+Neste exemplo, três instâncias do EC2 são criadas e, em seguida, uma instância null_resource é usada para coletar dados sobre todas as três e executar uma única ação que afeta todas elas. Devido ao mapa de triggers null_resource será substituído sempre que os ids de instância forem alterados e, portanto, o provisionador remote-exec será executado novamente.
+
+- Argument Reference:
+Os seguintes argumentos são apoiados:
+    triggers - (Opcional) Um mapa de strings arbitrárias que, quando alteradas, forçarão a substituição do recurso nulo, executando novamente quaisquer provisionadores associados.
+
+- Attributes Reference
+Os seguintes atributos são exportados:
+    id - Um valor arbitrário que muda cada vez que o recurso é substituído. Pode ser usado para fazer com que outros recursos sejam atualizados ou substituídos em resposta a null_resource .
+
+
+
+
+# ################################################################################################################################################################
+# ################################################################################################################################################################
+# ################################################################################################################################################################
 # local-exec Provisioner
 
 <https://www.terraform.io/language/resources/provisioners/local-exec>
 
-- O "local-exec Provisioner" executa um comando localmente na máquina que está rodando o Terraform. Exemplo: na nossa máquina local, na máquina que está rodando o CI/CD, etc.
+- O "local-exec Provisioner" executa um comando localmente na máquina que está rodando o Terraform. 
+Exemplo: na nossa máquina local, na máquina que está rodando o CI/CD, etc.
 
 
 - Example usage
@@ -148,6 +204,9 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula23-
 
 ~~~~
 
+- O resultado deste apply é a saída do comando Hello World na nossa máquina.
+- Poderia ser o echo do Hello World numa máquina/runner de um CI/CD, por exemplo.
+
 
 
 
@@ -174,7 +233,8 @@ resource "null_resource" "null" {
 
 
 - Ao efetuar um novo apply, nada ocorre.
-- Isso é devido o fato de não terem triggers configuradas, pois houve apenas uma troca no comando.
+- Isso é devido o fato de não terem triggers configuradas, pois houve apenas uma troca no comando!
+- Isso é devido o fato de não terem triggers configuradas, pois houve apenas uma troca no comando!
 
 ~~~~bash
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula23-Null-resource-e-provisioners$ terraform apply --auto-approve
@@ -244,7 +304,6 @@ terraform apply --auto-approve
 - Resultado:
 
 ~~~~bash
-
 fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula23-Null-resource-e-provisioners$ terraform apply --auto-approve
 null_resource.null: Refreshing state... [id=6206093357123528339]
 
@@ -282,6 +341,7 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula23-
 
 
 - Criando o provisioner com uma variável do tempo.
+- Gravando a saída do comando via local-exec, jogando a saída para um arquivo chamado "env_vars.txt".
 
 ~~~~h
 resource "null_resource" "null" {
@@ -444,11 +504,15 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula23-
 
 
 
-
-# IMPORTANTE
+# ##################################################################################################################################################################
+# ##################################################################################################################################################################
+# ##################################################################################################################################################################
+# nota IMPORTANTE
 Important: Use provisioners as a last resort. There are better alternatives for most situations. Refer to Declaring Provisioners for more details.
 Os Provisioners são considerados como última alternativa.
-Existem alternativas melhores com recursos nativos do Terraform ou não, para evitar o uso dos Provisioners.
+Existem alternativas melhores com recursos nativos do Terraform ou não, para evitar o uso dos Provisioners!
+Existem alternativas melhores com recursos nativos do Terraform ou não, para evitar o uso dos Provisioners!
+Existem alternativas melhores com recursos nativos do Terraform ou não, para evitar o uso dos Provisioners!
 
 
 
