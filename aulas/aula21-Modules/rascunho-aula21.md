@@ -400,6 +400,11 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-
 
 
 
+
+
+# ############################################################################################################################################################
+# ############################################################################################################################################################
+# ############################################################################################################################################################
 # Website
 
 - Na nossa pasta "website" temos 2 arquivos:
@@ -492,11 +497,13 @@ resource "aws_s3_bucket" "this" {
 
 
 
+
+# ############################################################################################################################################################
+# ############################################################################################################################################################
 # Dynamic Blocks
 <https://www.terraform.io/language/expressions/dynamic-blocks>
 - Se formos tentar aplicar isto, ao tentar criar o bucket do "main.tf" da raíz, ele vai tentar alterar o Bucket do S3 e colocar a parte de Website nele, mesmo que a gente queira criar um Bucket simples. Para resolver isto, podemos usar no módulo do S3 uma feature do Terraform que é o "Dynamic Blocks".
 Usando o "Dynamic Blocks" passamos uma condição para o Terraform criar aquele recurso, dependendo da condição ele faz uma coisa.
-
 
 - Como o for_each pode substituir o count, eles tem funcionalidades parecidas.
 - No nosso caso vamos usar o for_each, pois podemos acessar informações especificas da nossa lista.
@@ -513,9 +520,8 @@ variable "website" {
 
 -
 
-
+# ################
 # Função Keys
-
 keys(var.website)
   "A função ""keys"" retorna as chaves.
   No nosso caso a função ""keys"" retorna a lista de chaves da variável do tipo Map.
@@ -545,7 +551,12 @@ E assim por diante.
 - Num bloco dinâmico, acessamos os valores com o nome que a gente definiu.
 - Acessando o valor do index_document:
   index_document           = lookup(website.value, "index_document", null)
-
+- Detalhando o uso do lookup:
+    lookup(map, key, default)
+    > lookup({a=""ay"", b=""bee""}, ""a"", ""what?"")
+    ay
+    > lookup({a=""ay"", b=""bee""}, ""c"", ""what?"")
+    what?
 - Nosso bloco de código para o Dynamic ficará assim, no main.tf do Module S3:
   /home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula21-Modules/s3_module/main.tf
 
