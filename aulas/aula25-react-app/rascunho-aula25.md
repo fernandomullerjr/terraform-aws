@@ -170,8 +170,24 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula25-
 cd website
 npm start
 
+Compiled successfully!
+
+You can now view website in the browser.
+
+  Local:            http://localhost:3000
+  On Your Network:  http://192.168.0.113:3000
+
+Note that the development build is not optimized.
+To create a production build, use npm run build.
+
+webpack compiled successfully
+
+
 - Site acessivel via:
 http://192.168.0.113:3000/
+
+
+
 
 
 - Editando o arquivo app.js:
@@ -186,64 +202,3 @@ Alterado o conteúdo
 http://192.168.0.113:3000/
 
 
-
-
-
-
-# TERRAFORM
-- Criada estrutura na pasta terraform.
-
-- Ajustando as variáveis:
-
-~~~~h
-variable "aws_region" {
-  type        = string
-  description = ""
-  default     = "us-east-1"
-}
-
-variable "aws_profile" {
-  type        = string
-  description = ""
-  default     = "fernandomuller"
-}
-
-variable "domain" {
-  type        = string
-  description = ""
-  default     = ""
-}
-~~~~
-
-
-
-- Ajustando a versão no main.tf:
-
-~~~~h
-terraform {
-  required_version = "1.1.5"
-~~~~
-
-
-
-- Ajustando arquivo backend.hcl
-
-de:
-
-~~~~h
-bucket         = "tfstate-968339500772"
-key            = "03-static-website/terraform.tfstate"
-region         = "eu-central-1"
-profile        = "tf014"
-dynamodb_table = "tflock-tfstate-968339500772"
-~~~~
-
-para:
-
-~~~~h
-bucket         = "tfstate-261106957109"
-key            = "03-static-website/terraform.tfstate"
-region         = "us-east-1"
-profile        = "fernandomuller"
-dynamodb_table = "tflock-tfstate-261106957109"
-~~~~
