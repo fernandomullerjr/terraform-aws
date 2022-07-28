@@ -10,8 +10,14 @@ variable "aws_profile" {
   default     = "fernandomullerjr8596"
 }
 
-variable "domain" {
+variable "ami" {
   type        = string
   description = ""
-  default     = ""
+  default     = "ami-04505e74c0741db8d"
+}
+
+variable "instance_type" {
+  type        = string
+  description = ""
+  default     = "t2.micro"
 }
