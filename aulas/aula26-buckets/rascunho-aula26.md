@@ -717,6 +717,17 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula26-
 
 
 
+~~~~bash
+Criada a pasta "build"
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula26-buckets/website$ ls
+build  node_modules  package.json  package-lock.json  public  README.md  src
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula26-buckets/website$
+~~~~
+
+
+
+
 
 
 
@@ -1111,3 +1122,136 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula26-
 - Seguir com o apply.
 - Destroy dos recursos depois.
 - Ver sobre os states no backend S3, tabela do DynamoDB, 
+
+
+
+
+
+# DIA 30/07/2022
+
+- Efetuando o apply.
+
+~~~~bash
+
+random_pet.website: Creating...
+random_pet.website: Creation complete after 0s [id=manually-locally-repeatedly-hot-reindeer]
+data.template_file.s3-public-policy: Reading...
+data.template_file.s3-public-policy: Read complete after 0s [id=a4a41408c8708cb933d8fee53977c6dd972bd2a52abb02784ddae04eddf34097]
+module.logs.aws_s3_bucket.this: Creating...
+module.logs.aws_s3_bucket.this: Creation complete after 9s [id=manually-locally-repeatedly-hot-reindeer-logs]
+module.website.aws_s3_bucket.this: Creating...
+module.website.aws_s3_bucket.this: Still creating... [10s elapsed]
+module.website.aws_s3_bucket.this: Creation complete after 14s [id=manually-locally-repeatedly-hot-reindeer]
+module.website.module.objects.aws_s3_bucket_object.this["static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg"]: Creating...
+module.redirect.aws_s3_bucket.this: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["logo192.png"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["logo512.png"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["static/js/787.71e672d5.chunk.js.map"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["robots.txt"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js.LICENSE.txt"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["asset-manifest.json"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["static/js/787.71e672d5.chunk.js"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["static/css/main.073c9b0a.css.map"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js.LICENSE.txt"]: Creation complete after 2s [id=static/js/main.d58be654.js.LICENSE.txt]
+module.website.module.objects.aws_s3_bucket_object.this["static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg"]: Creation complete after 2s [id=static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg]
+module.website.module.objects.aws_s3_bucket_object.this["logo512.png"]: Creation complete after 2s [id=logo512.png]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js.map"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["static/css/main.073c9b0a.css.map"]: Creation complete after 2s [id=static/css/main.073c9b0a.css.map]
+module.website.module.objects.aws_s3_bucket_object.this["favicon.ico"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["index.html"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["static/css/main.073c9b0a.css"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["static/js/787.71e672d5.chunk.js"]: Creation complete after 2s [id=static/js/787.71e672d5.chunk.js]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["logo192.png"]: Creation complete after 2s [id=logo192.png]
+module.website.module.objects.aws_s3_bucket_object.this["manifest.json"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["static/js/787.71e672d5.chunk.js.map"]: Creation complete after 2s [id=static/js/787.71e672d5.chunk.js.map]
+module.website.module.objects.aws_s3_bucket_object.this["asset-manifest.json"]: Creation complete after 2s [id=asset-manifest.json]
+module.website.module.objects.aws_s3_bucket_object.this["robots.txt"]: Creation complete after 2s [id=robots.txt]
+module.website.module.objects.aws_s3_bucket_object.this["static/css/main.073c9b0a.css"]: Creation complete after 2s [id=static/css/main.073c9b0a.css]
+module.website.module.objects.aws_s3_bucket_object.this["favicon.ico"]: Creation complete after 2s [id=favicon.ico]
+module.website.module.objects.aws_s3_bucket_object.this["manifest.json"]: Creation complete after 2s [id=manifest.json]
+module.website.module.objects.aws_s3_bucket_object.this["index.html"]: Creation complete after 2s [id=index.html]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js"]: Creation complete after 3s [id=static/js/main.d58be654.js]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js.map"]: Creation complete after 3s [id=static/js/main.d58be654.js.map]
+module.redirect.aws_s3_bucket.this: Still creating... [10s elapsed]
+module.redirect.aws_s3_bucket.this: Creation complete after 11s [id=www.manually-locally-repeatedly-hot-reindeer]
+Releasing state lock. This may take a few moments...
+
+Apply complete! Resources: 19 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+website-url = "manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com"
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula26-buckets/terraform$
+
+~~~~
+
+
+
+- URL para acesso ao Website:
+manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com
+manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com
+
+
+~~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula26-buckets/terraform$ curl -v manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com
+* Expire in 0 ms for 6 (transfer 0x561caafe5fb0)
+* Expire in 200 ms for 4 (transfer 0x561caafe5fb0)
+* Connected to manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com (52.217.41.219) port 80 (#0)
+> GET / HTTP/1.1
+> Host: manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com
+> User-Agent: curl/7.64.0
+> Accept: */*
+>
+< HTTP/1.1 200 OK
+< x-amz-id-2: gknZiOFk/agd5JBjIINgRULI/XAGRUbKMaxSPYkWS0WfAJlZrgBWAep9Pz/CkPqdJsr13uA9Pu4=
+< x-amz-request-id: TQKEMMNC3DQ877Z3
+< Date: Sat, 30 Jul 2022 22:40:21 GMT
+< Last-Modified: Sat, 30 Jul 2022 22:26:44 GMT
+< x-amz-version-id: HnyvGCIdXWZcI5YHVQOZOku0.lObxjrQ
+< ETag: "388ccaafb727af791d148ac46cd3d3f2"
+< Content-Type: text/html; charset=utf-8
+< Server: AmazonS3
+< Content-Length: 644
+<
+* Connection #0 to host manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com left intact
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="Web site created using create-react-app"/><link rel="apple-touch-icon" href="/logo192.png"/><link rel="manifest" href="/manifest.json"/><title>React App</title><script defer="defer" src="/static/js/main.d58be654.js"></script><link href="/static/css/main.073c9b0a.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula26-buckets/terraform$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula26-buckets/terraform$
+~~~~
+
+
+
+
+- Ao tentar acessar o Website usando www na frente do endereço, ocorre o redirecionamento:
+www.manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com
+
+    Status
+    301
+    Moved Permanently
+
+curl -v www.manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com
+
+~~~~bash
+* Connected to www.manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com (54.231.224.117) port 80 (#0)
+> GET / HTTP/1.1
+> Host: www.manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com
+> User-Agent: curl/7.64.0
+> Accept: */*
+>
+< HTTP/1.1 301 Moved Permanently
+< x-amz-id-2: hELRuZPBYxzXAI0K0DvuzTqjhaneFz8XCW47rJGdutykSw9FqKbipGfRx6tD4BorkyFAoZgPoBE=
+< x-amz-request-id: J8BBK4GVND3MGCYD
+< Date: Sat, 30 Jul 2022 22:41:10 GMT
+< Location: http://manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com/
+< Server: AmazonS3
+< Content-Length: 0
+<
+* Connection #0 to host www.manually-locally-repeatedly-hot-reindeer.s3-website-us-east-1.amazonaws.com left intact
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula26-buckets/terraform$
+~~~~
+
+
+
+
+- Tempo levado:
+357ms
