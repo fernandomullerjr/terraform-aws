@@ -1105,6 +1105,8 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula26-
 
 
 # PENDENTE
+-continua em 11:12
+-continua em 11:12
 - Antes de fazer o apply, efetuar "npm run build" no projeto.
 - Seguir com o apply.
 - Destroy dos recursos depois.
