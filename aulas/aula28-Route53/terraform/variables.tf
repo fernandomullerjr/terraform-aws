@@ -10,6 +10,7 @@ variable "aws_profile" {
   default     = "fernandomullerjr8596"
 }
 
+#
 variable "domain" {
   type        = string
   description = ""

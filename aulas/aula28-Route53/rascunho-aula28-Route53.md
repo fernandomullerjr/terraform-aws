@@ -797,6 +797,218 @@ Public
 
 
 
+- Efetuando o destroy as 14:43h:
+
+
+
+Plan: 0 to add, 0 to change, 5 to destroy.
+
+Changes to Outputs:
+  - cdn-url         = "dd8gecyr9fae5.cloudfront.net" -> null
+  - distribution-id = "E18OGVTNZBEKXE" -> null
+aws_cloudfront_distribution.this: Destroying... [id=E18OGVTNZBEKXE]
+╷
+│ Error: error disabling CloudFront Distribution (E18OGVTNZBEKXE): InvalidArgument: The S3 bucket that you specified for CloudFront logs doesn't exist: mainly-gladly-mistakenly-modern-crayfish-logs.s3.amazonaws.com
+│       status code: 400, request id: 7f10aa79-8206-48b6-a385-2adf0070d0d0
+│
+│
+╵
+Releasing state lock. This may take a few moments...
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula28-Route53/terraform$
+
+
+
+- Erro ao tentar deletar a origin via console na AWS:
+Failed to delete origin: 1 validation error detected: Value '[]' at 'distributionConfig.origins.items' failed to satisfy constraint: Member must have length greater than or equal to 1
+
+
+- Criado bucket vazio chamado mainly-gladly-mistakenly-modern-crayfish
+mainly-gladly-mistakenly-modern-crayfish
+
+- Tentando novo destroy.
+
+- Agora foi:
+
+~~~~bash
+
+    }
+
+  # module.logs.aws_s3_bucket.this will be destroyed
+  - resource "aws_s3_bucket" "this" {
+      - acl                         = "log-delivery-write" -> null
+      - arn                         = "arn:aws:s3:::fernandomullerjr.site-logs" -> null
+      - bucket                      = "fernandomullerjr.site-logs" -> null
+      - bucket_domain_name          = "fernandomullerjr.site-logs.s3.amazonaws.com" -> null
+      - bucket_regional_domain_name = "fernandomullerjr.site-logs.s3.amazonaws.com" -> null
+      - force_destroy               = false -> null
+      - hosted_zone_id              = "Z3AQBSTGFYJSTF" -> null
+      - id                          = "fernandomullerjr.site-logs" -> null
+      - region                      = "us-east-1" -> null
+      - request_payer               = "BucketOwner" -> null
+      - tags                        = {
+          - "CreatedAt" = "2022-07-23"
+          - "Module"    = "3"
+          - "Project"   = "Curso AWS com Terraform"
+          - "Service"   = "Static Website"
+        } -> null
+
+      - versioning {
+          - enabled    = false -> null
+          - mfa_delete = false -> null
+        }
+    }
+
+  # module.website.aws_s3_bucket.this will be destroyed
+  - resource "aws_s3_bucket" "this" {
+      - acl                         = "public-read" -> null
+      - arn                         = "arn:aws:s3:::fernandomullerjr.site" -> null
+      - bucket                      = "fernandomullerjr.site" -> null
+      - bucket_domain_name          = "fernandomullerjr.site.s3.amazonaws.com" -> null
+      - bucket_regional_domain_name = "fernandomullerjr.site.s3.amazonaws.com" -> null
+      - force_destroy               = false -> null
+      - hosted_zone_id              = "Z3AQBSTGFYJSTF" -> null
+      - id                          = "fernandomullerjr.site" -> null
+      - policy                      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "s3:GetObject"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - AWS = "*"
+                        }
+                      - Resource  = "arn:aws:s3:::fernandomullerjr.site/*"
+                      - Sid       = "PublicReadForGetBucketObjects"
+                    },
+                ]
+              - Version   = "2008-10-17"
+            }
+        ) -> null
+      - region                      = "us-east-1" -> null
+      - request_payer               = "BucketOwner" -> null
+      - tags                        = {
+          - "CreatedAt" = "2022-07-23"
+          - "Module"    = "3"
+          - "Project"   = "Curso AWS com Terraform"
+          - "Service"   = "Static Website"
+        } -> null
+      - website_domain              = "s3-website-us-east-1.amazonaws.com" -> null
+      - website_endpoint            = "fernandomullerjr.site.s3-website-us-east-1.amazonaws.com" -> null
+
+      - logging {
+          - target_bucket = "fernandomullerjr.site-logs" -> null
+          - target_prefix = "access/" -> null
+        }
+
+      - versioning {
+          - enabled    = true -> null
+          - mfa_delete = false -> null
+        }
+
+      - website {
+          - error_document = "index.html" -> null
+          - index_document = "index.html" -> null
+        }
+    }
+
+Plan: 0 to add, 0 to change, 5 to destroy.
+
+Changes to Outputs:
+  - cdn-url         = "dd8gecyr9fae5.cloudfront.net" -> null
+  - distribution-id = "E18OGVTNZBEKXE" -> null
+aws_cloudfront_distribution.this: Destroying... [id=E18OGVTNZBEKXE]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 10s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 20s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 30s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 40s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 50s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 1m0s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 1m10s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 1m20s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 1m30s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 1m40s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 1m50s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 2m0s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 2m10s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 2m20s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 2m30s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 2m40s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 2m50s elapsed]
+aws_cloudfront_distribution.this: Still destroying... [id=E18OGVTNZBEKXE, 3m0s elapsed]
+aws_cloudfront_distribution.this: Destruction complete after 3m9s
+aws_cloudfront_origin_access_identity.this: Destroying... [id=E1WAHT6F0TMQQA]
+module.website.aws_s3_bucket.this: Destroying... [id=fernandomullerjr.site]
+module.website.aws_s3_bucket.this: Destruction complete after 0s
+module.logs.aws_s3_bucket.this: Destroying... [id=fernandomullerjr.site-logs]
+aws_cloudfront_origin_access_identity.this: Destruction complete after 0s
+╷
+│ Error: error deleting S3 Bucket (fernandomullerjr.site-logs): BucketNotEmpty: The bucket you tried to delete is not empty
+│       status code: 409, request id: JRRHH5YSM9X4MZW4, host id: ISEmZwMl52xkLAi8i+MViEwi+pskJEBxW55GcaG6VdfaRt96J9K8Hpqe2/9FCAq7e3G6kX44YNs=
+│
+│
+╵
+Releasing state lock. This may take a few moments...
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula28-Route53/terraform$ terraform destroy -auto-approve
+Acquiring state lock. This may take a few moments...
+random_pet.website: Refreshing state... [id=mainly-gladly-mistakenly-modern-crayfish]
+module.logs.aws_s3_bucket.this: Refreshing state... [id=fernandomullerjr.site-logs]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # random_pet.website will be destroyed
+  - resource "random_pet" "website" {
+      - id        = "mainly-gladly-mistakenly-modern-crayfish" -> null
+      - length    = 5 -> null
+      - separator = "-" -> null
+    }
+
+  # module.logs.aws_s3_bucket.this will be destroyed
+  - resource "aws_s3_bucket" "this" {
+      - acl                         = "log-delivery-write" -> null
+      - arn                         = "arn:aws:s3:::fernandomullerjr.site-logs" -> null
+      - bucket                      = "fernandomullerjr.site-logs" -> null
+      - bucket_domain_name          = "fernandomullerjr.site-logs.s3.amazonaws.com" -> null
+      - bucket_regional_domain_name = "fernandomullerjr.site-logs.s3.amazonaws.com" -> null
+      - force_destroy               = false -> null
+      - hosted_zone_id              = "Z3AQBSTGFYJSTF" -> null
+      - id                          = "fernandomullerjr.site-logs" -> null
+      - region                      = "us-east-1" -> null
+      - request_payer               = "BucketOwner" -> null
+      - tags                        = {
+          - "CreatedAt" = "2022-07-23"
+          - "Module"    = "3"
+          - "Project"   = "Curso AWS com Terraform"
+          - "Service"   = "Static Website"
+        } -> null
+
+      - versioning {
+          - enabled    = false -> null
+          - mfa_delete = false -> null
+        }
+    }
+
+Plan: 0 to add, 0 to change, 2 to destroy.
+
+Changes to Outputs:
+module.logs.aws_s3_bucket.this: Destroying... [id=fernandomullerjr.site-logs]
+module.logs.aws_s3_bucket.this: Destruction complete after 1s
+random_pet.website: Destroying... [id=mainly-gladly-mistakenly-modern-crayfish]
+random_pet.website: Destruction complete after 0s
+Releasing state lock. This may take a few moments...
+
+Destroy complete! Resources: 2 destroyed.
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula28-Route53/terraform$
+
+~~~~
+
 
 # PENDENTE
+- Destroy da infra antiga.
+- Acompanhar billing e Hosted Zone.
 - Seguir para aula 30 e criar o certificado, para poder criar toda a infra.
+- Usar o meu dominio da Hostinger.
+
+
