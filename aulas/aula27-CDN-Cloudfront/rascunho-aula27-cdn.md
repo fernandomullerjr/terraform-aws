@@ -405,3 +405,72 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula27-
 - aula continua em 7:34
 - aula continua em 7:34
 - aula continua em 7:34
+
+
+
+
+
+# Dia 07/08/2022
+
+- Adicionando ao outputs.tf:
+
+~~~~h
+output "cdn-url" {
+  value = aws_cloudfront_distribution.this.domain_name
+}
+
+output "distribution-id" {
+  value = aws_cloudfront_distribution.this.id
+}
+~~~~
+
+
+
+- Como a gente não tem um dominio personalizado, podemos usar um certificado fornecido pelo Cloudfront.
+- Basta usar o cloudfront_default_certificate como "true":
+
+~~~~h
+  dynamic "viewer_certificate" {
+    for_each = local.has_domain ? [] : [0]
+    content {
+      cloudfront_default_certificate = true
+    }
+  }
+~~~~
+
+
+
+
+- Efetuando plan
+
+
+Plan: 21 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + cdn-url         = (known after apply)
+  + distribution-id = (known after apply)
+  + website-url     = (known after apply)
+
+
+
+- Observação:
+a ordem do HEAD, GET e OPTIONS importa, na configuração do Cloudfront:
+
+  default_cache_behavior {
+    allowed_methods        = ["HEAD", "GET", "OPTIONS"]
+    cached_methods         = ["HEAD", "GET"]
+
+
+- Efetuando apply
+terraform apply -auto-approve
+
+~~~~bash
+Apply complete! Resources: 21 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+cdn-url = "dd8gecyr9fae5.cloudfront.net"
+distribution-id = "E18OGVTNZBEKXE"
+website-url = "mainly-gladly-mistakenly-modern-crayfish.s3-website-us-east-1.amazonaws.com"
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula27-CDN-Cloudfront/terraform$
+~~~~
