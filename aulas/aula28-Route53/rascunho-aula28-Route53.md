@@ -1,14 +1,14 @@
 
-# Aula 27 - CDN - Cloudfront
+# Aula 28 - Route 53
 
 # resumo - push
 eval $(ssh-agent -s)
 ssh-add /home/fernando/.ssh/chave-debian10-github
 git add .
-git commit -m "Aula 27 - CDN - Cloudfront - Site estático"
+git commit -m "Aula 28 - Route 53 - Site estático"
 git push
 
-# DIA 30/07/2022
+# DIA 07/08/2022
 
 
 - Comando curl que traz o tempo de resposta de um site:
