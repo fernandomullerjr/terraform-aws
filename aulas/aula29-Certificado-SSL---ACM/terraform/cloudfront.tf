@@ -58,8 +58,8 @@ resource "aws_cloudfront_distribution" "this" {
   dynamic "viewer_certificate" {
     for_each = local.has_domain ? [0] : []
     content {
-#      acm_certificate_arn = aws_acm_certificate.this[0].arn
-      cloudfront_default_certificate = true
+      acm_certificate_arn = aws_acm_certificate.this[0].arn
+#      cloudfront_default_certificate = true
       ssl_support_method  = "sni-only"
     }
   }

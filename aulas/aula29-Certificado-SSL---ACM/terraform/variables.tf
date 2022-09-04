@@ -14,5 +14,5 @@ variable "aws_profile" {
 variable "domain" {
   type        = string
   description = ""
-  default     = ""
+  default     = "fernandomullerjr.site"
 }
