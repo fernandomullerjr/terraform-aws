@@ -9,6 +9,8 @@ resource "aws_cloudfront_distribution" "this" {
   default_root_object = "index.html"
   aliases             = local.has_domain ? [local.domain] : []
 
+  provider = aws.us-east-1
+
   logging_config {
     bucket          = module.logs.domain_name
     prefix          = "cnd/"
