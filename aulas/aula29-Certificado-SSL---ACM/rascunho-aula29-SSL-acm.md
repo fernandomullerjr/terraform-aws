@@ -963,11 +963,335 @@ fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula29-
 
 
 
-
+- Adicionando o provider no manifesto do Cloudfront:
 provider = aws.us-east-1
 /home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula29-Certificado-SSL---ACM/terraform/cloudfront.tf
 
 
+# push
+eval $(ssh-agent -s)
+ssh-add /home/fernando/.ssh/chave-debian10-github
+git status
+git add .
+git commit -m "Aula 29 - Certificado SSL - ACM. pt2. TSHOOT, erros no certificado ACM. Erros no Cloudfront."
+git push
+git status
+
+
+- Efetuando novo apply.
+
+~~~~bash
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula29-Certificado-SSL---ACM/terraform$ terraform validate
+Success! The configuration is valid.
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula29-Certificado-SSL---ACM/terraform$ terraform apply -auto-approve
+Acquiring state lock. This may take a few moments...
+random_pet.website: Refreshing state... [id=frankly-internally-horribly-welcome-killdeer]
+aws_cloudfront_origin_access_identity.this: Refreshing state... [id=E3IAQISOYSYNGY]
+module.logs.aws_s3_bucket.this: Refreshing state... [id=fernandomullerjr.site-logs]
+aws_acm_certificate.this[0]: Refreshing state... [id=arn:aws:acm:us-east-1:261106957109:certificate/2a21728f-2c3f-4b74-856c-8df96941b411]
+aws_route53_record.cert_validation["*.fernandomullerjr.site"]: Refreshing state... [id=Z0647982JAWRY25D845S__c9ed2937ec43a466e90729c949d20c4e.fernandomullerjr.site._CNAME]
+aws_route53_record.cert_validation["fernandomullerjr.site"]: Refreshing state... [id=Z0647982JAWRY25D845S__c9ed2937ec43a466e90729c949d20c4e.fernandomullerjr.site._CNAME]
+aws_acm_certificate_validation.this[0]: Refreshing state... [id=2022-09-07 16:04:17.664 +0000 UTC]
+module.website.aws_s3_bucket.this: Refreshing state... [id=fernandomullerjr.site]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js.map"]: Refreshing state... [id=static/js/main.d58be654.js.map]
+module.website.module.objects.aws_s3_bucket_object.this["logo512.png"]: Refreshing state... [id=logo512.png]
+module.website.module.objects.aws_s3_bucket_object.this["favicon.ico"]: Refreshing state... [id=favicon.ico]
+module.redirect.aws_s3_bucket.this: Refreshing state... [id=www.fernandomullerjr.site]
+module.website.module.objects.aws_s3_bucket_object.this["static/css/main.073c9b0a.css"]: Refreshing state... [id=static/css/main.073c9b0a.css]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/787.71e672d5.chunk.js"]: Refreshing state... [id=static/js/787.71e672d5.chunk.js]
+module.website.module.objects.aws_s3_bucket_object.this["robots.txt"]: Refreshing state... [id=robots.txt]
+module.website.module.objects.aws_s3_bucket_object.this["index.html"]: Refreshing state... [id=index.html]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js"]: Refreshing state... [id=static/js/main.d58be654.js]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js.LICENSE.txt"]: Refreshing state... [id=static/js/main.d58be654.js.LICENSE.txt]
+module.website.module.objects.aws_s3_bucket_object.this["static/css/main.073c9b0a.css.map"]: Refreshing state... [id=static/css/main.073c9b0a.css.map]
+module.website.module.objects.aws_s3_bucket_object.this["logo192.png"]: Refreshing state... [id=logo192.png]
+module.website.module.objects.aws_s3_bucket_object.this["static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg"]: Refreshing state... [id=static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg]
+module.website.module.objects.aws_s3_bucket_object.this["manifest.json"]: Refreshing state... [id=manifest.json]
+module.website.module.objects.aws_s3_bucket_object.this["asset-manifest.json"]: Refreshing state... [id=asset-manifest.json]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/787.71e672d5.chunk.js.map"]: Refreshing state... [id=static/js/787.71e672d5.chunk.js.map]
+aws_route53_record.www[0]: Refreshing state... [id=Z0647982JAWRY25D845S_www.fernandomullerjr.site_A]
+
+Note: Objects have changed outside of Terraform
+
+Terraform detected the following changes made outside of Terraform since the last "terraform apply":
+
+  # aws_acm_certificate.this[0] has changed
+  ~ resource "aws_acm_certificate" "this" {
+        id                        = "arn:aws:acm:us-east-1:261106957109:certificate/2a21728f-2c3f-4b74-856c-8df96941b411"
+      ~ status                    = "PENDING_VALIDATION" -> "ISSUED"
+      + tags                      = {}
+        # (6 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # aws_route53_record.cert_validation["*.fernandomullerjr.site"] has changed
+  ~ resource "aws_route53_record" "cert_validation" {
+        id              = "Z0647982JAWRY25D845S__c9ed2937ec43a466e90729c949d20c4e.fernandomullerjr.site._CNAME"
+        name            = "_c9ed2937ec43a466e90729c949d20c4e.fernandomullerjr.site"
+        # (6 unchanged attributes hidden)
+    }
+
+  # aws_route53_record.cert_validation["fernandomullerjr.site"] has changed
+  ~ resource "aws_route53_record" "cert_validation" {
+        id              = "Z0647982JAWRY25D845S__c9ed2937ec43a466e90729c949d20c4e.fernandomullerjr.site._CNAME"
+        name            = "_c9ed2937ec43a466e90729c949d20c4e.fernandomullerjr.site"
+        # (6 unchanged attributes hidden)
+    }
+
+
+Unless you have made equivalent changes to your configuration, or ignored the relevant attributes using ignore_changes, the following plan may include actions to undo or respond to
+these changes.
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_cloudfront_distribution.this will be created
+  + resource "aws_cloudfront_distribution" "this" {
+      + aliases                        = [
+          + "fernandomullerjr.site",
+        ]
+      + arn                            = (known after apply)
+      + caller_reference               = (known after apply)
+      + comment                        = "Managed by Terraform"
+      + default_root_object            = "index.html"
+      + domain_name                    = (known after apply)
+      + enabled                        = true
+      + etag                           = (known after apply)
+      + hosted_zone_id                 = (known after apply)
+      + http_version                   = "http2"
+      + id                             = (known after apply)
+      + in_progress_validation_batches = (known after apply)
+      + is_ipv6_enabled                = true
+      + last_modified_time             = (known after apply)
+      + price_class                    = "PriceClass_All"
+      + retain_on_delete               = false
+      + status                         = (known after apply)
+      + tags                           = {
+          + "CreatedAt" = "2022-07-23"
+          + "Module"    = "3"
+          + "Project"   = "Curso AWS com Terraform"
+          + "Service"   = "Static Website"
+        }
+      + trusted_signers                = (known after apply)
+      + wait_for_deployment            = true
+
+      + default_cache_behavior {
+          + allowed_methods        = [
+              + "GET",
+              + "HEAD",
+              + "OPTIONS",
+            ]
+          + cached_methods         = [
+              + "GET",
+              + "HEAD",
+            ]
+          + compress               = false
+          + default_ttl            = 3600
+          + max_ttl                = 86400
+          + min_ttl                = 0
+          + target_origin_id       = "fernandomullerjr.site.s3.amazonaws.com"
+          + trusted_signers        = (known after apply)
+          + viewer_protocol_policy = "redirect-to-https"
+
+          + forwarded_values {
+              + headers                 = [
+                  + "Origin",
+                ]
+              + query_string            = false
+              + query_string_cache_keys = (known after apply)
+
+              + cookies {
+                  + forward           = "none"
+                  + whitelisted_names = (known after apply)
+                }
+            }
+        }
+
+      + logging_config {
+          + bucket          = "fernandomullerjr.site-logs.s3.amazonaws.com"
+          + include_cookies = true
+          + prefix          = "cnd/"
+        }
+
+      + origin {
+          + domain_name = "fernandomullerjr.site.s3.amazonaws.com"
+          + origin_id   = "fernandomullerjr.site.s3.amazonaws.com"
+
+          + s3_origin_config {
+              + origin_access_identity = "origin-access-identity/cloudfront/E3IAQISOYSYNGY"
+            }
+        }
+
+      + restrictions {
+          + geo_restriction {
+              + locations        = (known after apply)
+              + restriction_type = "none"
+            }
+        }
+
+      + viewer_certificate {
+          + acm_certificate_arn      = "arn:aws:acm:us-east-1:261106957109:certificate/2a21728f-2c3f-4b74-856c-8df96941b411"
+          + minimum_protocol_version = "TLSv1"
+          + ssl_support_method       = "sni-only"
+        }
+    }
+
+  # aws_route53_record.website[0] will be created
+  + resource "aws_route53_record" "website" {
+      + allow_overwrite = (known after apply)
+      + fqdn            = (known after apply)
+      + id              = (known after apply)
+      + name            = "fernandomullerjr.site"
+      + type            = "A"
+      + zone_id         = "Z0647982JAWRY25D845S"
+
+      + alias {
+          + evaluate_target_health = false
+          + name                   = (known after apply)
+          + zone_id                = (known after apply)
+        }
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + cdn-url         = (known after apply)
+  + distribution-id = (known after apply)
+aws_cloudfront_distribution.this: Creating...
+aws_cloudfront_distribution.this: Still creating... [10s elapsed]
+aws_cloudfront_distribution.this: Still creating... [20s elapsed]
+aws_cloudfront_distribution.this: Still creating... [30s elapsed]
+aws_cloudfront_distribution.this: Still creating... [40s elapsed]
+aws_cloudfront_distribution.this: Still creating... [50s elapsed]
+aws_cloudfront_distribution.this: Still creating... [1m0s elapsed]
+aws_cloudfront_distribution.this: Still creating... [1m10s elapsed]
+aws_cloudfront_distribution.this: Still creating... [1m20s elapsed]
+aws_cloudfront_distribution.this: Still creating... [1m30s elapsed]
+aws_cloudfront_distribution.this: Still creating... [1m40s elapsed]
+aws_cloudfront_distribution.this: Still creating... [1m50s elapsed]
+aws_cloudfront_distribution.this: Still creating... [2m0s elapsed]
+aws_cloudfront_distribution.this: Still creating... [2m10s elapsed]
+aws_cloudfront_distribution.this: Still creating... [2m20s elapsed]
+aws_cloudfront_distribution.this: Still creating... [2m30s elapsed]
+aws_cloudfront_distribution.this: Still creating... [2m40s elapsed]
+aws_cloudfront_distribution.this: Still creating... [2m50s elapsed]
+aws_cloudfront_distribution.this: Still creating... [3m0s elapsed]
+aws_cloudfront_distribution.this: Creation complete after 3m7s [id=E3DUT01E7FPKW]
+aws_route53_record.website[0]: Creating...
+aws_route53_record.website[0]: Still creating... [10s elapsed]
+aws_route53_record.website[0]: Still creating... [20s elapsed]
+aws_route53_record.website[0]: Still creating... [30s elapsed]
+aws_route53_record.website[0]: Creation complete after 39s [id=Z0647982JAWRY25D845S_fernandomullerjr.site_A]
+Releasing state lock. This may take a few moments...
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+cdn-url = "d1oftwh0mbt813.cloudfront.net"
+distribution-id = "E3DUT01E7FPKW"
+website-url = "fernandomullerjr.site"
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula29-Certificado-SSL---ACM/terraform$
+~~~~
+
+
+
+
+# ########################################################################################################################################################
+# ########################################################################################################################################################
+# SOLUÇÃO:
+- Adicionando o provider no manifesto do Cloudfront:
+provider = aws.us-east-1
+/home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula29-Certificado-SSL---ACM/terraform/cloudfront.tf
+
+
+
+- Site acessível via Cloudfront:
+cdn-url = "d1oftwh0mbt813.cloudfront.net"
+
+~~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber$ curl d1oftwh0mbt813.cloudfront.net
+<html>
+<head><title>301 Moved Permanently</title></head>
+<body bgcolor="white">
+<center><h1>301 Moved Permanently</h1></center>
+<hr><center>CloudFront</center>
+</body>
+</html>
+fernando@debian10x64:~/cursos/terraform-udemy-cleber$
+~~~~
+
+
+
+
+
+
+# ########################################################################################################################################################
+# ########################################################################################################################################################
+# ERRO
+
+- Não acessível via meu dominio ainda:
+<fernandomullerjr.site>
+
+- Verificando o Whos is, parece ter alguma pendencia sobre a transferencia:
+<https://who.is/whois/fernandomullerjr.site>
+
+Registrar Info
+Name
+Hostinger, UAB
+Whois Server
+whois.hostinger.com
+Referral URL
+https://www.hostinger.com
+Status
+clientTransferProhibited https://icann.org/epp#clientTransferProhibited
+
+
+
+clientTransferProhibited 	
+client transfer prohibited
+This status code tells your domain's registry to reject requests to transfer the domain from your current registrar to another.
+This status indicates that it is not possible to transfer the domain name registration, which will help prevent unauthorized transfers resulting from hijacking and/or fraud. If you do want to transfer your domain, you must first contact your registrar and request that they remove this status code.
+
+
+Chave secreta
+  <ocultei-a-chave-secreta>
+Servidores DNS
+  ns-1231.awsdns-25.org ns-1645.awsdns-13.co.uk ns-229.awsdns-28.com ns-740.awsdns-28.net 
+
+
+
+# ########################################################################################################################################################
+# ########################################################################################################################################################
+# SOLUÇÃO
+
+- Desmarquei opção no painel da Hostinger:
+      Bloqueio de Transferência
+      Proteja facilmente seu domínio contra transferências não autorizadas
+
+- Depois de algum tempo propagando, site acessível via domínio personalizado:
+<https://fernandomullerjr.site/>
+
+
+
+
+
+# push
+eval $(ssh-agent -s)
+ssh-add /home/fernando/.ssh/chave-debian10-github
+git status
+git add .
+git commit -m "Aula 29 - Certificado SSL - ACM. pt3. TSHOOT, erros no acesso via dominio fernandomullerjr.site. Validações. Ajustes na Hostinger"
+git push
+git status
+
 # PENDENTE
-- Efetuar teste do ACM sem o "subject_alternative_names", pra ver se o apply funciona.
+- Verificar billing.
 - Fazer KB sobre erros desta aula.
