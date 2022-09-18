@@ -1254,7 +1254,8 @@ Status
 clientTransferProhibited https://icann.org/epp#clientTransferProhibited
 
 
-
+- Detalhes:
+<https://www.icann.org/resources/pages/epp-status-codes-2014-06-16-en#clientTransferProhibited>
 clientTransferProhibited 	
 client transfer prohibited
 This status code tells your domain's registry to reject requests to transfer the domain from your current registrar to another.
@@ -1272,6 +1273,10 @@ Servidores DNS
 # ########################################################################################################################################################
 # SOLUÇÃO
 
+- Fonte:
+<https://support.hostinger.com.br/pt-BR/articles/1636271-como-solicitar-o-codigo-epp-auth-para-transferencias-de-dominio>
+<https://support.hostinger.com/en/articles/1583203-how-to-obtain-epp-or-auth-code-for-domain-transfer-at-hostinger>
+
 - Desmarquei opção no painel da Hostinger:
       Bloqueio de Transferência
       Proteja facilmente seu domínio contra transferências não autorizadas
@@ -1288,10 +1293,23 @@ eval $(ssh-agent -s)
 ssh-add /home/fernando/.ssh/chave-debian10-github
 git status
 git add .
-git commit -m "Aula 29 - Certificado SSL - ACM. pt3. TSHOOT, erros no acesso via dominio fernandomullerjr.site. Validações. Ajustes na Hostinger"
+git commit -m "Aula 29 - Certificado SSL - ACM. pt3. TSHOOT, erros no acesso via dominio fernandomullerjr.site. Validações. Ajustes na Hostinger."
 git push
 git status
 
-# PENDENTE
-- Verificar billing.
-- Fazer KB sobre erros desta aula.
+
+
+- Status atual:
+site acessível via Cloudfront e domínio personalizado
+<https://d1oftwh0mbt813.cloudfront.net/>
+<https://fernandomullerjr.site/>
+
+
+
+
+# ########################################################################################################################################################
+# ########################################################################################################################################################
+#  PENDENTE
+- Verificar billing. Dia 07/09 foi aplicado S3, Cloudfront, ACM e Route53, acompanhar.
+- Fazer KB sobre erros desta aula. 
+- Fazer KB sobre o timeouts.
