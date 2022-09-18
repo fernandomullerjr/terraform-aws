@@ -18,6 +18,6 @@ resource "aws_acm_certificate_validation" "this" {
 
   timeouts {
     create = "60m"
-#    delete = "2h"
+    #    delete = "2h"
   }
 }

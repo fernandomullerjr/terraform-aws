@@ -508,3 +508,120 @@ echo "rm -rf plan.tfout"
 rm -rf plan.tfout
 echo "----------------------------------------"
 ~~~~
+
+
+
+
+#    - push
+eval $(ssh-agent -s)
+ssh-add /home/fernando/.ssh/chave-debian10-github
+git status
+git add .
+git commit -m "Aula 30 - Restrição no bucket e script para buildar o website. pt2"
+git push
+git status
+
+
+
+# continua em
+5:20
+
+
+
+- Se der um erro sai do script:
+set -e
+
+- Faz com que o script entre no diretório do scripts
+cd "${0%/*}" || return
+
+
+
+- Verificando o script, ele não tem permissão de execução:
+
+~~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula30-Restricao-no-bucket-e-script-para-buildar-o-website/terraform$ ls -lhasp /home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula30-Restricao-no-bucket-e-script-para-buildar-o-website/scripts
+total 12K
+4.0K drwxr-xr-x 2 fernando fernando 4.0K Sep 17 22:08 ./
+4.0K drwxr-xr-x 5 fernando fernando 4.0K Sep 17 22:07 ../
+4.0K -rw-r--r-- 1 fernando fernando 1.2K Sep 17 22:08 deploy.sh
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula30-Restricao-no-bucket-e-script-para-buildar-o-website/terraform$
+~~~~
+
+
+- Adicionando a permissão de execução no script:
+sudo chmod +x /home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula30-Restricao-no-bucket-e-script-para-buildar-o-website/scripts/deploy.sh
+
+~~~~bash
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula30-Restricao-no-bucket-e-script-para-buildar-o-website/terraform$
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula30-Restricao-no-bucket-e-script-para-buildar-o-website/terraform$ ls -lhasp /home/fernando/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula30-Restricao-no-bucket-e-script-para-buildar-o-website/scripts
+total 12K
+4.0K drwxr-xr-x 2 fernando fernando 4.0K Sep 17 22:08 ./
+4.0K drwxr-xr-x 5 fernando fernando 4.0K Sep 17 22:07 ../
+4.0K -rwxr-xr-x 1 fernando fernando 1.2K Sep 17 22:08 deploy.sh
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula30-Restricao-no-bucket-e-script-para-buildar-o-website/terraform$
+~~~~
+
+
+
+- Executando o script de deploy, passando o parametro do dominio:
+./scripts/deploy.sh fernandomullerjr.site
+
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula30-Restricao-no-bucket-e-script-para-buildar-o-website$ ./scripts/deploy.sh fernandomullerjr.site
+
+
+- Resultado:
+
+~~~~bash
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Saved the plan to: plan.tfout
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "plan.tfout"
+Releasing state lock. This may take a few moments...
+----------------------------------------
+Applying...
+terraform apply plan.tfout
+Acquiring state lock. This may take a few moments...
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js"]: Destroying... [id=static/js/main.d58be654.js]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js.map"]: Destroying... [id=static/js/main.d58be654.js.map]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js.LICENSE.txt"]: Destroying... [id=static/js/main.d58be654.js.LICENSE.txt]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js.map"]: Destruction complete after 2s
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js"]: Destruction complete after 2s
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.d58be654.js.LICENSE.txt"]: Destruction complete after 2s
+module.website.aws_s3_bucket.this: Modifying... [id=fernandomullerjr.site]
+module.website.aws_s3_bucket.this: Still modifying... [id=fernandomullerjr.site, 10s elapsed]
+module.website.aws_s3_bucket.this: Modifications complete after 11s [id=fernandomullerjr.site]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.93ae1108.js"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.93ae1108.js.map"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.93ae1108.js.LICENSE.txt"]: Creating...
+module.website.module.objects.aws_s3_bucket_object.this["index.html"]: Modifying... [id=index.html]
+module.website.module.objects.aws_s3_bucket_object.this["asset-manifest.json"]: Modifying... [id=asset-manifest.json]
+module.website.module.objects.aws_s3_bucket_object.this["asset-manifest.json"]: Modifications complete after 2s [id=asset-manifest.json]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.93ae1108.js.LICENSE.txt"]: Creation complete after 2s [id=static/js/main.93ae1108.js.LICENSE.txt]
+module.website.module.objects.aws_s3_bucket_object.this["index.html"]: Modifications complete after 2s [id=index.html]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.93ae1108.js"]: Creation complete after 2s [id=static/js/main.93ae1108.js]
+module.website.module.objects.aws_s3_bucket_object.this["static/js/main.93ae1108.js.map"]: Creation complete after 3s [id=static/js/main.93ae1108.js.map]
+Releasing state lock. This may take a few moments...
+
+Apply complete! Resources: 3 added, 3 changed, 3 destroyed.
+
+Outputs:
+
+cdn-url = "d1oftwh0mbt813.cloudfront.net"
+distribution-id = "E3DUT01E7FPKW"
+website-url = "fernandomullerjr.site"
+----------------------------------------
+Cleaning up plan file
+rm -rf plan.tfout
+----------------------------------------
+fernando@debian10x64:~/cursos/terraform-udemy-cleber/terraform-aws/aulas/aula30-Restricao-no-bucket-e-script-para-buildar-o-website$
+~~~~
+
+
+- Site acessivel via:
+https://fernandomullerjr.site/
+https://d1oftwh0mbt813.cloudfront.net/
+
+- Site trazendo o link para o Github, atualizado, script do deploy buildando corretamente.
